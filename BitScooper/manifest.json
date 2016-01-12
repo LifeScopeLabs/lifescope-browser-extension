@@ -1,0 +1,13 @@
+{
+  "name": "BitScooper",
+  "version": "1.2",
+  "description": "Search and Explore the Internet of You.",
+  "permissions": [
+    "history"
+  ],
+  "browser_action": {
+    "default_popup": "typedUrls.html",
+    "default_icon": "logo_240.png"
+  },
+  "manifest_version": 2
+}

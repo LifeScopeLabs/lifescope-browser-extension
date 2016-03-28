@@ -1,0 +1,19 @@
+{
+  "Hulu": {
+    "protocol": "http",
+    "domain": "hulu.com"
+  },
+  "Netflix": {
+    "netflix": "netflix.com/watch"
+  },
+  "Apple iTunes": {
+  },
+  "Google Voice": {
+    "url": "google.com/voice"
+  },
+  "OkCupid": {
+  },
+  "Google Play": {
+    "url": "google.com/play"
+  }
+}

@@ -6,7 +6,7 @@
     "history"
   ],
   "browser_action": {
-    "default_popup": "typedUrls.html",
+    "default_popup": "BitScooper.html",
     "default_icon": "logo_240.png"
   },
   "manifest_version": 2

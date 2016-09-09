@@ -1,0 +1,66 @@
+{{#history}}
+  <div class='controls hours'>
+    <div class='moon'></div>
+    <ol class='pagination'>
+      {{#hours}}
+        <li>
+          <a href='#hour_{{value}}' data-hour='{{value}}' class='{{^enabled}}disabled{{/enabled}}'>
+            {{label}}
+          </a>
+        </li>
+      {{/hours}}
+    </ol>
+    <div class='sun'></div>
+  </div>
+  <div>
+    {{#visitsByHour}}
+    <div id='hour_{{hour}}' class='hour_visits' data-hour='{{hour}}' style='padding-top: 10px;'>
+        <div class='controls' style='border: none;'>
+          <h4 style='margin: 10px 0 0;'><strong>{{hour_label}}</strong></h4>
+          <div class='spacer'></div>
+          <button class='delete_hour' style='font-size: 11px;' data-hour='{{hour}}'>
+            {{i18n_delete_all_visits_for_filter_button}}
+          </button>
+        </div>
+        <ol class='visits highlightable editable'>
+          {{#visits}}
+            {{#filename}}
+              <li class='visit' data-url='{{url}}'>
+                <a href='{{url}}' class='item download' data-download-id='{{id}}'>
+                  <dl class='description' style='background-image: url(chrome://favicon/{{url}})'>
+                    <dt>
+                    {{{title}}} ({{size}} MB)
+                    </dt>
+                    <dd class='time'>{{time}}</dd>
+                    <dd class='location'>{{url}}</dd>
+                  </dl>
+                </a>
+                <a class='search_domain action' href='#search/{{host}}'>{{i18n_search_by_domain}}</a>
+                <a class='delete_download delete' href='#' data-url='{{url}}' title='{{i18n_prompt_delete_button}}'>{{i18n_prompt_delete_button}}</a>
+              </li>
+            {{/filename}}
+            {{^filename}}
+              <li class='visit' data-url='{{url}}' data-title='{{title}}'>
+                <a href='{{url}}' class='item site'>
+                  <dl class='description' style='background-image: url(chrome://favicon/{{url}})'>
+                    <dt>
+                      <div class='active_tags'></div>
+                      {{{title}}}
+                    </dt>
+                    <dd class='time'>{{time}}</dd>
+                    <dd class='location'>{{url}}</dd>
+                  </dl>
+                </a>
+                <a class='search_domain action' href='#search/{{host}}'>{{i18n_search_by_domain}}</a>
+                <a class='delete_visit delete' href='#' data-url='{{url}}' title='{{i18n_prompt_delete_button}}'>{{i18n_prompt_delete_button}}</a>
+              </li>
+            {{/filename}}
+          {{/visits}}
+        </ol>
+      </div>
+    {{/visitsByHour}}
+  </div>
+{{/history}}
+{{^history}}
+  <p>{{i18n_no_visits_found}}</p>
+{{/history}}

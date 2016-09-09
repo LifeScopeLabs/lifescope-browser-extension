@@ -1,0 +1,63 @@
+<header>
+  <h1>{{i18n_settings_title}}</h1>
+</header>
+<div class='content'>
+  <div class='settings'>
+    <section>
+      <h3>{{i18n_clearing_history_section_title}}</h3>
+      <div>
+        <button class='clear_history'>{{i18n_clear_history_button}}</button>
+      </div>
+    </section>
+    <section>
+      <h3>{{i18n_right_click_options_section_title}}</h3>
+      <div class='checkbox'>
+        <label>
+          <input id='search_by_selection' type='checkbox' />
+          <span>{{i18n_search_by_text_selection_label}}</span>
+        </label>
+      </div>
+      <div class='checkbox'>
+        <label>
+          <input id='search_by_domain' type='checkbox' />
+          <span>{{i18n_search_by_domain_label}}</span>
+        </label>
+      </div>
+    </section>
+    <section>
+      <h3>{{i18n_whats_new_section_title}}</h3>
+      <div>
+        <div class='row'>
+          <a class='modal_link credits' href='#settings/credits'>{{{i18n_credits_link}}}</a>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h3>{{i18n_feedback_section_title}}</h3>
+      <div>
+        {{{i18n_suggestions_bugs_comments}}}
+        <br />
+        <a style='margin-top: 10px; display: block;' href='mailto:info@bitscoop.com'>info@bitscoop.com</a>
+      </div>
+    </section>
+    <section>
+      <h3>{{i18n_spread_the_word_section_title}}</h3>
+      <div>
+        <div class='row'>
+          <a href='https://bitscooplabs.com' target='_blank'>{{i18n_mailing_list_link}}</a>
+        </div>
+        <div class='row'>
+          <a href='https://chrome.google.com/webstore/detail/[[ID]]'>{{i18n_leave_a_review}}</a>
+        </div>
+        <div class='row'>
+          <!-- Place this tag where you want the +1 button to render -->
+          <div class='g-plusone' data-annotation='inline' data-href='https://bitscoop.com'></div>
+        </div>
+        <div class='row'>
+          <a class='twitter-follow-button' data-lang='{{i18n_twitter_language}}' data-show-count='false' data-width='150px' href='https://twitter.com/bitscooplabs'>Follow @bitscooplabs</a>
+          <a class='twitter-share-button' data-count='horizontal' data-lang='{{i18n_twitter_language}}' data-text='{{i18n_twitter_template}}' data-url='https://bitscoop.com' data-via='bitscooplabs' href='https://twitter.com/share'>Tweet</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

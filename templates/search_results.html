@@ -1,0 +1,51 @@
+<ol class='visits highlightable editable'>
+  {{#visits}}
+    {{#filename}}
+      <li class='visit visit_view' data-url='{{url}}'>
+        <a href='{{url}}' class='item download' data-download-id='{{id}}'>
+          <dl class='description' style='background-image: url(chrome://favicon/{{url}})'>
+            <dt>
+            {{{name}}} ({{size}} MB)
+            </dt>
+            <dd class='location'>{{{location}}}</dd>
+            <dd class='datetime'>{{{time}}}</dd>
+          </dl>
+        </a>
+        <a class='delete_download delete' href='#' data-url='{{url}}' title='{{i18n_prompt_delete_button}}'>{{i18n_prompt_delete_button}}</a>
+      </li>
+    {{/filename}}
+    {{^filename}}
+      <li class='visit visit_view searched' data-url='{{url}}' data-title='{{title}}'>
+        <a href='{{url}}' class='site'>
+          <dl class='description' style='background-image: url(chrome://favicon/{{url}})'>
+            <dt>
+              <div class='active_tags'></div>
+              {{{name}}}
+            </dt>
+            <dd class='location'>{{{location}}}</dd>
+            <dd class='datetime'>{{{datetime}}}</dd>
+          </dl>
+        </a>
+        <a class='delete_visit delete' href='#' data-url='{{url}}' title='{{i18n_prompt_delete_button}}'>{{i18n_prompt_delete_button}}</a>
+      </li>
+    {{/filename}}
+  {{/visits}}
+  {{#extendSearch}}
+    <li class='search_deeper'>
+      <div class='wrapper'>
+        <div class='search_controls'>
+          <br />
+          <button class='search_deeper'>Search deeper</button>
+          <strong>(can be a bit slow)</strong>
+        </div>
+        <div class='working'>
+          <br />
+          <strong>Searching deeper...</strong>
+        </div>
+      </div>
+    </li>
+  {{/extendSearch}}
+</ol>
+{{^visits}}
+  <p class='no_visits'>{{i18n_no_visits_found}}</p>
+{{/visits}}

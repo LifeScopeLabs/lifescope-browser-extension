@@ -1,0 +1,42 @@
+body {
+  direction: __MSG_@@bidi_dir__;
+}
+.chrome-bootstrap header .corner {
+  __MSG_@@bidi_start_edge__: auto;
+  __MSG_@@bidi_end_edge__: 0px;
+}
+.chrome-bootstrap .highlightable li .action {
+  __MSG_@@bidi_start_edge__: auto;
+  __MSG_@@bidi_end_edge__: 32px;
+}
+.chrome-bootstrap .highlightable.editable .delete {
+  __MSG_@@bidi_start_edge__: auto;
+  __MSG_@@bidi_end_edge__: 5px;
+}
+.view .description {
+  background-position:__MSG_@@bidi_start_edge__ 0;
+  padding-__MSG_@@bidi_start_edge__: 25px;
+}
+.modal .logo {
+  __MSG_@@bidi_end_edge__: -50px;
+}
+.credits_view .translators .language {
+  text-align: __MSG_@@bidi_end_edge__;
+  float: __MSG_@@bidi_end_edge__;
+}
+.visit .location {
+  background-image: -webkit-gradient(linear, __MSG_@@bidi_start_edge__ top, __MSG_@@bidi_end_edge__ top, color-stop(82%, #777), to(white));
+}
+.week_view .spinner,
+.search_view .spinner {
+  __MSG_@@bidi_start_edge__: 4px;
+}
+.favicons {
+  float: __MSG_@@bidi_end_edge__;
+}
+.favicons li {
+  margin-__MSG_@@bidi_end_edge__: 5px;
+}
+.favicons li:last-child {
+  margin-__MSG_@@bidi_end_edge__: 0;
+}

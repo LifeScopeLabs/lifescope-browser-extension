@@ -1,0 +1,13 @@
+<li class='visit visit_view searched' data-url='{{url}}' data-title='{{title}}'>
+  <a href='{{url}}' class='site'>
+    <dl class='description' style='background-image: url(chrome://favicon/{{url}})'>
+      <dt>
+        <div class='active_tags'></div>
+        {{{title}}}
+      </dt>
+      <dd class='location'>{{{url}}}</dd>
+      <dd class='datetime'></dd>
+    </dl>
+  </a>
+  <a class='delete_visit delete' href='#' data-url='{{url}}' title='{{i18n_prompt_delete_button}}'>{{i18n_prompt_delete_button}}</a>
+</li>

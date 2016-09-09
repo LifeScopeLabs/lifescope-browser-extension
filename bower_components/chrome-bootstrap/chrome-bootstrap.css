@@ -1,5 +1,5 @@
 .chrome-bootstrap {
-  font-family: 'Noto Sans UI', 'Segoe UI', 'Chrome Droid Sans', 'Droid Sans Fallback', 'Lucida Grande', 'Tahoma', sans-serif;
+  font-family: Roboto,Arial,Helvetica,sans-serif;
   font-size: 12px;
   color: #303942;
   cursor: default;
@@ -98,8 +98,8 @@
   -webkit-margin-after: 1em;
   -webkit-margin-before: 21px;
   -webkit-margin-start: 23px;
-  height: 18px;
-  font-size: 18px;
+  height: 24px;
+  font-size: 24px;
 }
 .chrome-bootstrap h1 a {
   color: #5C6166;
@@ -275,6 +275,7 @@
   -webkit-padding-start: 40px;
   list-style-type: none;
   padding: 0;
+  font-size: 1.6em;
 }
 .chrome-bootstrap ul.menu li {
   -webkit-border-start: 6px solid transparent;
@@ -284,7 +285,7 @@
   text-align: -webkit-match-parent;
 }
 .chrome-bootstrap ul.menu li.selected {
-  -webkit-border-start-color: #4e5764;
+  -webkit-border-start-color: #2AC1DE;
 }
 .chrome-bootstrap ul.menu li.selected a {
   color: #464E5A;

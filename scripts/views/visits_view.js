@@ -19,7 +19,7 @@
     },
 
     pageTitle: function() {
-      return 'Activity';
+      return 'History';
     },
 
     render: function() {

@@ -17,7 +17,7 @@
   },
 
   "history_title": {
-    "message": "History",
+    "message": "BitScoop",
     "description": "Extension title"
   },
 
@@ -1186,7 +1186,7 @@
     "description": "description"
   },
   "sign_up_info_bullets": {
-    "message": "$open$Linked to your Google account$close$$open$Store unlimited tags and sites$close$$open$Log into BitScoop Browser Plugin when signed into Chrome$close$$open$Sync tags across Chrome browsers (when signed in)$close$$open$Safely stored in the cloud$close$$open$Access tagged sites on the go at $betterHistoryOpen$bitscooplabs.com$betterHistoryClose$$close$",
+    "message": "$open$Linked to your Google account$close$$open$Store unlimited tags and sites$close$$open$Log into BitScoop Browser Plugin when signed into Chrome$close$$open$Sync tags across Chrome browsers (when signed in)$close$$open$Safely stored in the cloud$close$$open$Access tagged sites on the go at $bitscoopOpen$bitscooplabs.com$bitscoopClose$$close$",
     "description": "sign up info",
     "placeholders": {
       "open": {
@@ -1197,11 +1197,11 @@
         "content": "$2",
         "example": "bullet close"
       },
-      "betterHistoryOpen": {
+      "bitscoopOpen": {
         "content": "$3",
         "example": "BitScoop Browser Plugin open link"
       },
-      "betterHistoryClose": {
+      "bitscoopClose": {
         "content": "$4",
         "example": "BitScoop Browser Plugin close link"
       }

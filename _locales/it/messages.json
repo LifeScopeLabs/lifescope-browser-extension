@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -18,7 +18,7 @@
 
   "history_title": {
     "message": "Cronologia",
-    "description": "BitScoop"
+    "description": "LIFESCOPE"
   },
 
   "short_date": {
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ riconoscimenti",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ riconoscimenti",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Suggerimenti, errori, commenti? Manda un tweet $link_open$@bitscooplabs!$link_close$",
+    "message": "Suggerimenti, errori, commenti? Manda un tweet $link_open$@LIFESCOPElabs!$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Riconoscimenti",
+    "message": "LIFESCOPE Browser Plugin Riconoscimenti",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -712,7 +712,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Conosci l'inglese e vuoi tradurre BitScoop Browser Plugin in una nuova lingua? Grande! Manda semplicemente un'email ai $link_open$$email$$link_close$",
+    "message": "Conosci l'inglese e vuoi tradurre LIFESCOPE Browser Plugin in una nuova lingua? Grande! Manda semplicemente un'email ai $link_open$$email$$link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin per Google Chrome, non sai cosa ti perdi!",
+    "message": "LIFESCOPE Browser Plugin per Google Chrome, non sai cosa ti perdi!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

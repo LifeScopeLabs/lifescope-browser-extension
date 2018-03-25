@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "Podziękowania dla tłumaczy $open$BitScoop Browser Plugin$close$",
+    "message": "Podziękowania dla tłumaczy $open$LIFESCOPE Browser Plugin$close$",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Sugestie, błędy, komentarze? Zatweetuj do $link_open$@bitscooplabs$link_close$!",
+    "message": "Sugestie, błędy, komentarze? Zatweetuj do $link_open$@LIFESCOPElabs$link_close$!",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Podziękowania",
+    "message": "LIFESCOPE Browser Plugin Podziękowania",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -712,7 +712,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Znasz język angielski i chcesz przetłumaczyć 'BitScoop Browser Plugin' na inny język? Świetnie! Napisz maila na adres $link_open$$email$$link_close$!",
+    "message": "Znasz język angielski i chcesz przetłumaczyć 'LIFESCOPE Browser Plugin' na inny język? Świetnie! Napisz maila na adres $link_open$$email$$link_close$!",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin dla Google Chrome, zobacz co tracisz!",
+    "message": "LIFESCOPE Browser Plugin dla Google Chrome, zobacz co tracisz!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

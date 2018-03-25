@@ -13,7 +13,7 @@
       if(this.pageTitle) {
         var element = $('<div/>');
         var cleanTitle = $(element).html(this.pageTitle()).text();
-        document.title = cleanTitle + " - BitScoop Browser Plugin";
+        document.title = cleanTitle + " - LIFESCOPE Browser Plugin";
       }
 
       this.trigger('selected');

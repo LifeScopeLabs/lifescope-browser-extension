@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ 鸣谢",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ 鸣谢",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "建议，不足，意见？发推$link_open$@bitscooplabs$link_close$！",
+    "message": "建议，不足，意见？发推$link_open$@LIFESCOPElabs$link_close$！",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin 鸣谢",
+    "message": "LIFESCOPE Browser Plugin 鸣谢",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -712,7 +712,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "你会讲英语并且想把BitScoop Browser Plugin翻译到一种新的语言？太棒了！请发Email到 $link_open$$email$$link_close$",
+    "message": "你会讲英语并且想把LIFESCOPE Browser Plugin翻译到一种新的语言？太棒了！请发Email到 $link_open$$email$$link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "试用Chrome的扩展BitScoop Browser Plugin，看看你错过了什么！",
+    "message": "试用Chrome的扩展LIFESCOPE Browser Plugin，看看你错过了什么！",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

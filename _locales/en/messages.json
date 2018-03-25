@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -17,7 +17,7 @@
   },
 
   "history_title": {
-    "message": "BitScoop",
+    "message": "LIFESCOPE",
     "description": "Extension title"
   },
 
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ credits",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ credits",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Suggestions, bugs, comments? Tweet to $link_open$@bitscooplabs$link_close$",
+    "message": "Suggestions, bugs, comments? Tweet to $link_open$@LIFESCOPElabs$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -602,7 +602,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Credits",
+    "message": "LIFESCOPE Browser Plugin Credits",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -716,7 +716,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Do you speak english and want to translate BitScoop Browser Plugin into a new lanuage? Great! Just send an email to $link_open$ $email$ $link_close$",
+    "message": "Do you speak english and want to translate LIFESCOPE Browser Plugin into a new lanuage? Great! Just send an email to $link_open$ $email$ $link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -839,7 +839,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin for Chrome, see what you're missing!",
+    "message": "LIFESCOPE Browser Plugin for Chrome, see what you're missing!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {
@@ -919,7 +919,7 @@
   },
 
   "mailing_list_title": {
-    "message": "Big things are coming to BitScoop Browser Plugin!",
+    "message": "Big things are coming to LIFESCOPE Browser Plugin!",
     "description": "the title for the sign up modal"
   },
   "mailing_list_description": {
@@ -1116,7 +1116,7 @@
     "description": "create tag button"
   },
   "about_tags_for_popup": {
-    "message": "$new_open$New!$new_close$ Tag sites with BitScoop Browser Plugin. $link_open$Details...$link_close$",
+    "message": "$new_open$New!$new_close$ Tag sites with LIFESCOPE Browser Plugin. $link_open$Details...$link_close$",
     "description": "about tags for the popup triggered by the browser action",
     "placeholders": {
       "new_open": {
@@ -1182,11 +1182,11 @@
     "description": "sign up info modal title"
   },
   "sign_up_info_description": {
-    "message": "Tag with confidence knowing that every site that you tag is safely stored in the cloud. Access your tags from any Chrome browser running BitScoop Browser Plugin!",
+    "message": "Tag with confidence knowing that every site that you tag is safely stored in the cloud. Access your tags from any Chrome browser running LIFESCOPE Browser Plugin!",
     "description": "description"
   },
   "sign_up_info_bullets": {
-    "message": "$open$Linked to your Google account$close$$open$Store unlimited tags and sites$close$$open$Log into BitScoop Browser Plugin when signed into Chrome$close$$open$Sync tags across Chrome browsers (when signed in)$close$$open$Safely stored in the cloud$close$$open$Access tagged sites on the go at $bitscoopOpen$bitscooplabs.com$bitscoopClose$$close$",
+    "message": "$open$Linked to your Google account$close$$open$Store unlimited tags and sites$close$$open$Log into LIFESCOPE Browser Plugin when signed into Chrome$close$$open$Sync tags across Chrome browsers (when signed in)$close$$open$Safely stored in the cloud$close$$open$Access tagged sites on the go at $LIFESCOPEOpen$LIFESCOPElabs.com$LIFESCOPEClose$$close$",
     "description": "sign up info",
     "placeholders": {
       "open": {
@@ -1197,13 +1197,13 @@
         "content": "$2",
         "example": "bullet close"
       },
-      "bitscoopOpen": {
+      "LIFESCOPEOpen": {
         "content": "$3",
-        "example": "BitScoop Browser Plugin open link"
+        "example": "LIFESCOPE Browser Plugin open link"
       },
-      "bitscoopClose": {
+      "LIFESCOPEClose": {
         "content": "$4",
-        "example": "BitScoop Browser Plugin close link"
+        "example": "LIFESCOPE Browser Plugin close link"
       }
     }
   },
@@ -1212,7 +1212,7 @@
     "description": "syncing price"
   },
   "sign_up_info_question": {
-    "message": "Questions? info@bitscoop.com",
+    "message": "Questions? info@lifescope.io",
     "description": "sign up questions"
   },
   "sign_up_temporarily_closed": {
@@ -1250,7 +1250,7 @@
     "description": "initial syncing description"
   },
   "initial_syncing_done": {
-    "message": "<strong>Syncing complete!</strong><br /><br /> Go get tagging and your changes will be backed up. View your tagged sites at <br />$link_open$bitscooplabs.com/me$link_close$",
+    "message": "<strong>Syncing complete!</strong><br /><br /> Go get tagging and your changes will be backed up. View your tagged sites at <br />$link_open$LIFESCOPElabs.com/me$link_close$",
     "description": "initial syncing done text",
     "placeholders": {
       "link_open": {
@@ -1268,7 +1268,7 @@
     "description": "title for syncing decision modal"
   },
   "syncing_decision_description": {
-    "message": "Looks like you have $strong_open$synced tagged sites$strong_close$. You can choose to pull those sites replacing your local tags or sync your local tags. You can view your synced sites by visiting <a href='http://www.bitscooplabs.com/me' target='_blank'>bitscooplabs.com/me</a>",
+    "message": "Looks like you have $strong_open$synced tagged sites$strong_close$. You can choose to pull those sites replacing your local tags or sync your local tags. You can view your synced sites by visiting <a href='http://www.LIFESCOPElabs.com/me' target='_blank'>LIFESCOPElabs.com/me</a>",
     "description": "syncing decision description",
     "placeholders": {
       "amount": {

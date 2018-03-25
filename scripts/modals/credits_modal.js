@@ -55,13 +55,13 @@
         'close_button'
       ]);
       properties.i18n_developed_by = BH.Chrome.I18n.t('developed_by', [
-        '<a href="https://bitscooplabs.com/">',
+        '<a href="https://LIFESCOPElabs.com/">',
         '</a>',
-        'BitScoop Labs, Inc'
+        'LIFESCOPE Labs, Inc'
       ]);
       properties.i18n_translation_instructions = BH.Chrome.I18n.t('translation_instructions', [
-        'mailto:info@bitscoop.com',
-        '<a href="mailto:info@bitscoop.com">',
+        'mailto:info@lifescope.io',
+        '<a href="mailto:info@lifescope.io">',
         '</a>'
       ]);
       return properties;

@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -143,7 +143,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "Crèdits de $open$BitScoop Browser Plugin$close$",
+    "message": "Crèdits de $open$LIFESCOPE Browser Plugin$close$",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -161,7 +161,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Suggeriments, errors, comentaris? Envieu un tweet a $link_open$@bitscooplabs$link_close$",
+    "message": "Suggeriments, errors, comentaris? Envieu un tweet a $link_open$@LIFESCOPElabs$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -594,7 +594,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Crèdits",
+    "message": "LIFESCOPE Browser Plugin Crèdits",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -708,7 +708,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Parleu anglès i voleu traduir BitScoop Browser Plugin a un nou idioma? Genial! Només heu d'enviar un correu electrònic a $link_open$ $email$ $link_close$",
+    "message": "Parleu anglès i voleu traduir LIFESCOPE Browser Plugin a un nou idioma? Genial! Només heu d'enviar un correu electrònic a $link_open$ $email$ $link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -831,7 +831,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin per Chrome, veieu què us perdeu!",
+    "message": "LIFESCOPE Browser Plugin per Chrome, veieu què us perdeu!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

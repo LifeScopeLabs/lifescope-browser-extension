@@ -1,12 +1,12 @@
 {
-  "name": "BitScooper",
+  "name": "LIFESCOPEer",
   "version": "1.2",
   "description": "Search and Explore the Internet of You.",
   "permissions": [
     "history"
   ],
   "browser_action": {
-    "default_popup": "BitScooper.html",
+    "default_popup": "LIFESCOPEer.html",
     "default_icon": "logo_240.png"
   },
   "manifest_version": 2

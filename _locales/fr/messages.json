@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -143,7 +143,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ crédits",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ crédits",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -161,7 +161,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Suggestions, bugs, commentaires? Adressez vos Tweets à bitscooplabs $link_open$@bitscooplabs$link_close$",
+    "message": "Suggestions, bugs, commentaires? Adressez vos Tweets à LIFESCOPElabs $link_open$@LIFESCOPElabs$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -173,7 +173,7 @@
     }
   },
   "spread_the_word_section_title": {
-    "message": "Partagez et Recommandez BitScoop Browser Plugin",
+    "message": "Partagez et Recommandez LIFESCOPE Browser Plugin",
     "description": "Section heading in Settings"
   },
   "leave_a_review": {
@@ -594,7 +594,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Crédits",
+    "message": "LIFESCOPE Browser Plugin Crédits",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -708,7 +708,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Parlez-vous anglais et souhaitez traduire BitScoop Browser Plugin dans une nouvelle lanuage? Super! Il suffit d'envoyer un courriel à $link_open$ $email$ $link_close$",
+    "message": "Parlez-vous anglais et souhaitez traduire LIFESCOPE Browser Plugin dans une nouvelle lanuage? Super! Il suffit d'envoyer un courriel à $link_open$ $email$ $link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -831,7 +831,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin pour Chrome, vous allez l'aimer!",
+    "message": "LIFESCOPE Browser Plugin pour Chrome, vous allez l'aimer!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

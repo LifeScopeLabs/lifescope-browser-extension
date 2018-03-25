@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -143,7 +143,7 @@
     "description": "Link text to view the release announcement"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ الإصدار الحالي",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ الإصدار الحالي",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "اقتراحات، مشاكل، تعليقات؟ ارسل تغريدة إلى $link_open$@bitscooplabs$link_close$",
+    "message": "اقتراحات، مشاكل، تعليقات؟ ارسل تغريدة إلى $link_open$@LIFESCOPElabs$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin الاعتمادات",
+    "message": "LIFESCOPE Browser Plugin الاعتمادات",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "!لا يفوتك .Chrome على BitScoop Browser Plugin",
+    "message": "!لا يفوتك .Chrome على LIFESCOPE Browser Plugin",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

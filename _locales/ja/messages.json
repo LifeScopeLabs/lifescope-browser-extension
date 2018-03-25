@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -17,7 +17,7 @@
   },
 
   "history_title": {
-    "message": "BitScoop",
+    "message": "LIFESCOPE",
     "description": "Extension title"
   },
 
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ credits",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ credits",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "提案のある人・バグを見つけた人・コメントを送りたい人は $link_open$@bitscooplabs$link_close$ にリプライを飛ばしてください！",
+    "message": "提案のある人・バグを見つけた人・コメントを送りたい人は $link_open$@LIFESCOPElabs$link_close$ にリプライを飛ばしてください！",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Credits",
+    "message": "LIFESCOPE Browser Plugin Credits",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -712,7 +712,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "英語が使えて、BitScoop Browser Plugin の翻訳をしたい貴方、大歓迎です！　$link_open$ $email$ $link_close$ までご連絡を！",
+    "message": "英語が使えて、LIFESCOPE Browser Plugin の翻訳をしたい貴方、大歓迎です！　$link_open$ $email$ $link_close$ までご連絡を！",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "Chrome 用 BitScoop Browser Plugin で、閲覧履歴が素敵に！",
+    "message": "Chrome 用 LIFESCOPE Browser Plugin で、閲覧履歴が素敵に！",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

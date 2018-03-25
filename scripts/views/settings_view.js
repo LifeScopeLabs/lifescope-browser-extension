@@ -115,7 +115,7 @@
         '</strong>'
       ]);
       properties.i18n_suggestions_bugs_comments = BH.Chrome.I18n.t('suggestions_bugs_comments', [
-        '<a href="http://twitter.com/bitscooplabs">',
+        '<a href="http://twitter.com/LIFESCOPElabs">',
         '</a>'
       ]);
       return properties;

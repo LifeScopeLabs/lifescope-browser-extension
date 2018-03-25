@@ -10,7 +10,7 @@
     this.chromeAPI = options.chrome;
     this.tracker = options.tracker;
 
-    this.id = 'bitscooplabs_selection_context_menu';
+    this.id = 'LIFESCOPElabs_selection_context_menu';
   };
 
   SelectionContextMenu.prototype.create = function() {

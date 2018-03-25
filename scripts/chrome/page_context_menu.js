@@ -18,7 +18,7 @@
       this.chromeAPI = options.chrome;
       this.tracker = options.tracker;
 
-      this.id = 'bitscooplabs_page_context_menu';
+      this.id = 'LIFESCOPElabs_page_context_menu';
   };
 
   PageContextMenu.prototype.create = function() {

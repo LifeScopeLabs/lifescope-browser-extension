@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ Credits",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ Credits",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Vorschläge, Fehler, Kommentare? Tweet zu $link_open$@bitscooplabs$link_close$!",
+    "message": "Vorschläge, Fehler, Kommentare? Tweet zu $link_open$@LIFESCOPElabs$link_close$!",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -177,7 +177,7 @@
     }
   },
   "spread_the_word_section_title": {
-    "message": "Verbreite BitScoop Browser Plugin",
+    "message": "Verbreite LIFESCOPE Browser Plugin",
     "description": "Section heading in Settings"
   },
   "leave_a_review": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Credits",
+    "message": "LIFESCOPE Browser Plugin Credits",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin für Chrome, schau' was du verpasst!",
+    "message": "LIFESCOPE Browser Plugin für Chrome, schau' was du verpasst!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

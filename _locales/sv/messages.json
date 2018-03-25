@@ -4,7 +4,7 @@
     "description": "language identifier used by Chrome"
   },
   "manifest_name": {
-    "message": "BitScoop Browser Plugin",
+    "message": "LIFESCOPE Browser Plugin",
     "description": "Manifest name"
   },
   "manifest_browser_action_title": {
@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ tack till",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ tack till",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Förslag, buggar, synpunkter? Twittra $link_open$@bitscooplabs$link_close$!",
+    "message": "Förslag, buggar, synpunkter? Twittra $link_open$@LIFESCOPElabs$link_close$!",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {
@@ -598,7 +598,7 @@
   },
 
   "credits_title": {
-    "message": "BitScoop Browser Plugin Tack till",
+    "message": "LIFESCOPE Browser Plugin Tack till",
     "description": "Title for credits modal"
   },
   "developed_by": {
@@ -712,7 +712,7 @@
     "description": "Heading to recruit translators"
   },
   "translation_instructions": {
-    "message": "Om du talar engelska och vill översätta BitScoop Browser Plugin till ett annat språk, skicka gärna ett mail till $link_open$ $email$ $link_close$",
+    "message": "Om du talar engelska och vill översätta LIFESCOPE Browser Plugin till ett annat språk, skicka gärna ett mail till $link_open$ $email$ $link_close$",
     "description": "Instructions on how to help translate",
     "placeholders": {
       "email": {
@@ -835,7 +835,7 @@
   },
 
   "twitter_template": {
-    "message": "BitScoop Browser Plugin för Chrome, hitta vad du annars skulle missa i din besökshistorik!",
+    "message": "LIFESCOPE Browser Plugin för Chrome, hitta vad du annars skulle missa i din besökshistorik!",
     "description": "Default message for Twitter sharing"
   },
   "twitter_language": {

@@ -45,8 +45,8 @@
     CreditsView.prototype.getI18nValues = function() {
       var properties;
       properties = this.t(['credits_title', 'translators_heading', 'spanish', 'swedish', 'german', 'french', 'italian', 'hungarian', 'chinese_simplified', 'arabic', 'polish', 'portuguese', 'russian', 'slovak', 'catalonian', 'hindi', 'vietnamese', 'japanese', 'romanian', 'czech', 'dutch', 'latvian', 'turkish', 'translation_help_heading', 'close_button']);
-      properties['i18n_developed_by'] = this.t('developed_by', ['<a href="http://automagical.posterous.com/">', '</a>', 'BitScoop Labs']);
-      properties['i18n_translation_instructions'] = this.t('translation_instructions', ['info@bitscoop.com', '<a href="mailto:info@bitscoop.com">', '</a>']);
+      properties['i18n_developed_by'] = this.t('developed_by', ['<a href="http://automagical.posterous.com/">', '</a>', 'LIFESCOPE Labs']);
+      properties['i18n_translation_instructions'] = this.t('translation_instructions', ['info@lifescope.io', '<a href="mailto:info@lifescope.io">', '</a>']);
       return properties;
     };
 

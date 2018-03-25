@@ -147,7 +147,7 @@
     "description": "label for the current version"
   },
   "credits_link": {
-    "message": "$open$BitScoop Browser Plugin$close$ Благодарности",
+    "message": "$open$LIFESCOPE Browser Plugin$close$ Благодарности",
     "description": "The link to credits",
     "placeholders": {
       "open": {
@@ -165,7 +165,7 @@
     "description": "Section heading in Settings"
   },
   "suggestions_bugs_comments": {
-    "message": "Есть предложения, нашли ошибку, хотите оставить комментарий? Пишите в Твиттер $link_open$@bitscooplabs!$link_close$",
+    "message": "Есть предложения, нашли ошибку, хотите оставить комментарий? Пишите в Твиттер $link_open$@LIFESCOPElabs!$link_close$",
     "description": "Link text to give feedback",
     "placeholders": {
       "link_open": {

@@ -372,7 +372,7 @@ div#body {
 .page {
   margin: 1em;
 
-  font-size: 10px;
+  font-size: 15px;
 }
 
 .boxed-group {
@@ -445,6 +445,17 @@ html.dark {
 
   a {
     color: $green-override;
+
+    &:hover {
+      color: $blue;
+    }
+  }
+}
+
+.add-domain {
+  i {
+    cursor: pointer;
+    margin-left: 0.3em;
 
     &:hover {
       color: $blue;

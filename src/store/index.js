@@ -1,38 +1,37 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import * as getters from "./getters";
-import mutations from "./mutations";
-import * as actions from "./actions";
-
 Vue.use(Vuex);
 
+let browser = chrome;
+
 export default new Vuex.Store({
-  state: {
-    whitelist: {
-      enabled: false,
-      entries: []
-    }
-  },
+	state: {
+		whitelist: []
+	},
 
-  mutations: {
-    SET_USER_SETTINGS: function(state, storage) {
-      state.whitelist = storage.whitelist;
-    }
-  },
+	mutations: {
+		SET_USER_SETTINGS: async function(state, storage) {
+			state.whitelist = storage.whitelist || [];
+		}
+	},
 
-  actions: {
-    async loadUserSettings({ commit }) {
-      chrome.storage.sync.get(['whitelist'], async function(result) {
-        console.log(result);
-        await commit('SET_USER_SETTINGS', result)
-      })
-    },
+	actions: {
+		loadUserSettings({ commit }) {
+			return new Promise(function(resolve, reject) {
+				browser.storage.sync.get(['whitelist'], async function(result) {
+					await commit('SET_USER_SETTINGS', result);
 
-    async saveUserSettings({ commit }) {
-      chrome.storage.sync.set({ whitelist: this.state.whitelist}, async function() {
-        console.log('Settings saved');
-      })
-    }
-  }
+					console.log('User Settings Set');
+					resolve();
+				});
+			})
+		},
+
+		async saveUserSettings({commit}) {
+			browser.storage.sync.set({whitelist: this.state.whitelist}, async function() {
+				console.log('Settings saved');
+			});
+		}
+	}
 });

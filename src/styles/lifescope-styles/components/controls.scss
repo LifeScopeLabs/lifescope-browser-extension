@@ -503,3 +503,35 @@ input[type='radio'], input[type='checkbox'] {
     border-color: #204d74;
   }
 }
+
+.whitelist {
+  margin-top: 2em;
+
+  .text-box {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  & > .entries {
+    @include flexbox;
+    @include flex-column;
+
+    color: $blue;
+
+    & > .entry {
+      margin: 0.2em 0;
+
+      & > span {
+        @include flex-grow;
+      }
+
+      & > i {
+        cursor: pointer;
+
+        &:hover {
+          color: $red;
+        }
+      }
+    }
+  }
+}

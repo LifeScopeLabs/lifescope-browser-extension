@@ -2,7 +2,10 @@
   "name": "example",
   "description": "A Vue.js web extension",
   "permissions": [
-    "storage"
+    "declarativeContent",
+    "history",
+    "storage",
+    "webNavigation"
   ],
   "version": "0.1",
   "manifest_version": 2,

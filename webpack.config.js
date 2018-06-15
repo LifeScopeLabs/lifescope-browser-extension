@@ -12,7 +12,7 @@ const config = {
   entry: {
     'background': './background.js',
     'options/options': './options/options.js',
-    'site': './styles/site.scss'
+    'site': './styles/site.scss',
   },
   output: {
     path: __dirname + '/dist',
@@ -60,7 +60,7 @@ const config = {
     }),
     new CopyWebpackPlugin([
       { from: 'icons', to: 'icons', ignore: ['icon.xcf'] },
-	    { from: 'options/options.html', to: 'options/options.html' },
+      { from: 'options/options.html', to: 'options/options.html' },
       {
         from: 'manifest.json',
         to: 'manifest.json',

@@ -24,6 +24,10 @@ const config = {
   module: {
     rules: [
       {
+        test: /\.gql$/,
+          loaders: 'graphql-tag'
+      },
+      {
         test: /\.vue$/,
         loaders: 'vue-loader',
       },

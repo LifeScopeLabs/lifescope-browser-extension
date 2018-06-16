@@ -2,6 +2,8 @@
   "name": "example",
   "description": "A Vue.js web extension",
   "permissions": [
+    "cookies",
+    "*://*.lifescope.io/",
     "declarativeContent",
     "history",
     "storage",

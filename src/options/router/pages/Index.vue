@@ -45,6 +45,8 @@
 
 <script>
 	import _ from 'lodash';
+	import bowser from 'bowser';
+	import gql from 'graphql-tag';
 	import url from 'url';
 
 	const browser = chrome;
@@ -143,10 +145,53 @@
 			}
 		},
 
-		mounted: function() {
-			this.$store.dispatch({
+		mounted: async function() {
+			console.log(this.$apollo);
+			let $apollo = this.$apollo.provider.defaultClient;
+
+			await this.$store.dispatch({
 				type: 'loadUserSettings'
 			});
+
+			let sessionIdCookie = await new Promise(function(resolve, reject) {
+				browser.cookies.get({
+					url: 'https://app.lifescope.io',
+					name: 'sessionid'
+				}, function(results) {
+					resolve(results);
+				});
+			});
+
+			console.log(sessionIdCookie);
+
+			if (sessionIdCookie != null) {
+				let result = await $apollo.query({
+					query: gql`query getBrowserConnection($browser: String!) {
+					connectionBrowserOne(browser: $browser) {
+						id
+					}
+				}`,
+					variables: {
+						browser: bowser.name
+					}
+				});
+
+				let existingBrowserConnection = result.data.connectionBrowserOne;
+				console.log(existingBrowserConnection);
+
+				if (existingBrowserConnection == null) {
+					await $apollo.mutate({
+						mutation: gql`mutation createBrowserConnection($browser: String!) {
+						connectionCreateBrowser(browser: $browser) {
+							id
+						}
+					}`,
+						variables: {
+							browser: bowser.name
+						}
+					});
+				}
+			}
 		}
 	};
 </script>

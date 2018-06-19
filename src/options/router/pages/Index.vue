@@ -45,16 +45,24 @@
 
 <script>
 	import _ from 'lodash';
+	import axios from 'axios';
 	import bowser from 'bowser';
 	import gql from 'graphql-tag';
 	import url from 'url';
 
 	const browser = chrome;
 
+	let audioSites = [
+		'Spotify'
+	];
+
+	let tagRegex = /#[^#\s]+/g;
+
 	export default {
 		data() {
 			return {
-				newDomain: ''
+				newDomain: '',
+				connection: {}
 			};
 		},
 
@@ -67,7 +75,8 @@
 
 		methods: {
 			addWhitelistEntry: async function() {
-				console.log('Adding Whitelist entry');
+				let self = this;
+
 				let domain = this.$data.newDomain;
 
 				let domainExists = this.$store.state.whitelist.indexOf(domain);
@@ -81,8 +90,6 @@
 				}
 
 				this.$data.newDomain = '';
-
-				console.log(browser);
 
 				let regexp = new RegExp(domain);
 
@@ -117,15 +124,85 @@
 						match.visits.push(result.visitTime)
 					});
 
-					console.log(match);
-
 					return Promise.resolve();
 				});
 
 				await Promise.all(promises);
 
-				_.each(matches, function(match) {
+				_.each(matches, async function(match) {
+					let result, newContent;
 
+					try {
+						result = await axios.get('https://iframely.lifescope.io/iframely?url=' + match.url);
+
+						let data = result.data;
+
+						newContent = {
+							connection_id_string: self.$data.connection.id,
+							identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
+							tags: [],
+							url: data.meta.canonical
+						};
+
+						console.log(data);
+						if (data.rel.indexOf('player') >= 0) {
+							newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
+						}
+						else if (data.rel.indexOf('image') >= 0) {
+							newContent.type = 'image';
+						}
+						else {
+							newContent.type = 'webpage';
+						}
+
+						if (data.meta.description) {
+							newContent.text = data.meta.description;
+
+							let tags = newContent.text.match(tagRegex);
+
+							if (tags != null) {
+								for (let j = 0; j < tags.length; j++) {
+									newContent.tags.push(tags[j].slice(1));
+								}
+							}
+						}
+
+						if (data.meta.title) {
+							newContent.title = data.meta.title;
+
+							let tags = newContent.title.match(tagRegex);
+
+							if (tags != null) {
+								for (let j = 0; j < tags.length; j++) {
+									newContent.tags.push(tags[j].slice(1));
+								}
+							}
+						}
+
+						let thumbnailLink = _.find(data.links, function(link) {
+							return link.rel.indexOf('thumbnail') >= 0;
+						});
+
+						if (thumbnailLink != null) {
+							newContent.embed_thumbnail = thumbnailLink.href;
+						}
+
+						if (data.html) {
+							newContent.embed_content = data.html;
+							newContent.embed_format = 'iframe';
+						}
+					}
+					catch(error) {
+						newContent = {
+							connection_id_string: self.$data.connection.id,
+							identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + match.url,
+							tags:  [],
+							type: 'webpage',
+							url: match.url
+						};
+					}
+
+					console.log(newContent);
 				});
 			},
 
@@ -146,7 +223,6 @@
 		},
 
 		mounted: async function() {
-			console.log(this.$apollo);
 			let $apollo = this.$apollo.provider.defaultClient;
 
 			await this.$store.dispatch({
@@ -162,8 +238,6 @@
 				});
 			});
 
-			console.log(sessionIdCookie);
-
 			if (sessionIdCookie != null) {
 				let result = await $apollo.query({
 					query: gql`query getBrowserConnection($browser: String!) {
@@ -177,10 +251,9 @@
 				});
 
 				let existingBrowserConnection = result.data.connectionBrowserOne;
-				console.log(existingBrowserConnection);
 
 				if (existingBrowserConnection == null) {
-					await $apollo.mutate({
+					existingBrowserConnection = await $apollo.mutate({
 						mutation: gql`mutation createBrowserConnection($browser: String!) {
 						connectionCreateBrowser(browser: $browser) {
 							id
@@ -191,6 +264,8 @@
 						}
 					});
 				}
+
+				this.$data.connection = existingBrowserConnection;
 			}
 		}
 	};

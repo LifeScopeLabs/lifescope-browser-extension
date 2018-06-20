@@ -28,6 +28,7 @@
 								<input type="text" placeholder="google.com" v-model="newDomain">
 							</div>
 							<i class="fa fa-plus" v-on:click="addWhitelistEntry"></i>
+							<span v-if="$data.showDomainError === true">That was not a valid domain.</span>
 						</div>
 					</form>
 
@@ -48,6 +49,7 @@
 	import axios from 'axios';
 	import bowser from 'bowser';
 	import gql from 'graphql-tag';
+	import moment from 'moment';
 	import url from 'url';
 
 	const browser = chrome;
@@ -56,13 +58,15 @@
 		'Spotify'
 	];
 
+	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/g;
 	let tagRegex = /#[^#\s]+/g;
 
 	export default {
 		data() {
 			return {
 				newDomain: '',
-				connection: {}
+				connection: {},
+				showDomainError: false
 			};
 		},
 
@@ -76,8 +80,21 @@
 		methods: {
 			addWhitelistEntry: async function() {
 				let self = this;
+				let events = [];
 
 				let domain = this.$data.newDomain;
+
+				this.$data.newDomain = '';
+
+				if (domain.match(domainRegex) == null) {
+					this.$data.showDomainError = true;
+
+					setTimeout(function() {
+						self.$data.showDomainError = false;
+					}, 1000);
+
+					return;
+				}
 
 				let domainExists = this.$store.state.whitelist.indexOf(domain);
 
@@ -88,8 +105,6 @@
 						type: 'saveUserSettings'
 					});
 				}
-
-				this.$data.newDomain = '';
 
 				let regexp = new RegExp(domain);
 
@@ -120,8 +135,10 @@
 						});
 					});
 
-					_.each(hydratedResults, function(result) {
-						match.visits.push(result.visitTime)
+					_.each(hydratedResults, function(result, index) {
+						if (index === 0 || (index > 0 && Math.abs(moment(result.visitTime) - moment(hydratedResults[index - 1].visitTime)) > 1000)) {
+							match.visits.push(result.visitTime)
+						}
 					});
 
 					return Promise.resolve();
@@ -129,80 +146,120 @@
 
 				await Promise.all(promises);
 
+				promises = [];
+
 				_.each(matches, async function(match) {
 					let result, newContent;
 
-					try {
-						result = await axios.get('https://iframely.lifescope.io/iframely?url=' + match.url);
+					promises.push(new Promise(async function(resolve, reject) {
+						try {
+							result = await axios.get('https://iframely.lifescope.io/iframely?url=' + match.url);
 
-						let data = result.data;
+							let data = result.data;
 
-						newContent = {
-							connection_id_string: self.$data.connection.id,
-							identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
-							tags: [],
-							url: data.meta.canonical
-						};
+							newContent = {
+								connection_id_string: self.$data.connection.id,
+								identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
+								tagMasks: {
+									source: []
+								},
+								url: data.meta.canonical
+							};
 
-						console.log(data);
-						if (data.rel.indexOf('player') >= 0) {
-							newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
-						}
-						else if (data.rel.indexOf('image') >= 0) {
-							newContent.type = 'image';
-						}
-						else {
-							newContent.type = 'webpage';
-						}
+							if (data.rel.indexOf('player') >= 0) {
+								newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
+							}
+							else if (data.rel.indexOf('image') >= 0) {
+								newContent.type = 'image';
+							}
+							else {
+								newContent.type = 'web-page';
+							}
 
-						if (data.meta.description) {
-							newContent.text = data.meta.description;
+							if (data.meta.description) {
+								newContent.text = data.meta.description;
 
-							let tags = newContent.text.match(tagRegex);
+								let tags = newContent.text.match(tagRegex);
 
-							if (tags != null) {
-								for (let j = 0; j < tags.length; j++) {
-									newContent.tags.push(tags[j].slice(1));
+								if (tags != null) {
+									for (let j = 0; j < tags.length; j++) {
+										newContent.tagMasks.source.push(tags[j].slice(1));
+									}
 								}
 							}
-						}
 
-						if (data.meta.title) {
-							newContent.title = data.meta.title;
+							if (data.meta.title) {
+								newContent.title = data.meta.title;
 
-							let tags = newContent.title.match(tagRegex);
+								let tags = newContent.title.match(tagRegex);
 
-							if (tags != null) {
-								for (let j = 0; j < tags.length; j++) {
-									newContent.tags.push(tags[j].slice(1));
+								if (tags != null) {
+									for (let j = 0; j < tags.length; j++) {
+										newContent.tagMasks.source.push(tags[j].slice(1));
+									}
 								}
 							}
+
+							let thumbnailLink = _.find(data.links, function(link) {
+								return link.rel.indexOf('thumbnail') >= 0;
+							});
+
+							if (thumbnailLink != null) {
+								newContent.embed_thumbnail = thumbnailLink.href;
+							}
+
+							if (data.html) {
+								newContent.embed_content = data.html;
+								newContent.embed_format = 'iframe';
+							}
+						}
+						catch(error) {
+							newContent = {
+								connection_id_string: self.$data.connection.id,
+								identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + match.url,
+								tagMasks:  {
+									source: []
+								},
+								type: 'web-page',
+								url: match.url
+							};
 						}
 
-						let thumbnailLink = _.find(data.links, function(link) {
-							return link.rel.indexOf('thumbnail') >= 0;
+						_.each(match.visits, function(visit) {
+							let newEvent = {
+								connection_id_string: self.$data.connection.id,
+								identifier: self.$data.connection.id + ':::' + bowser.name + ':::visited:::' + match.url + ':::' + moment(visit).utc().toJSON(),
+								content: [newContent],
+								context: 'Visited web page',
+								datetime: moment(visit).utc().toDate(),
+								provider_name: 'Browser Extensions',
+								tagMasks: {
+									source: []
+								},
+								type: 'viewed'
+							};
+
+							events.push(newEvent);
+
+							resolve();
 						});
+					}));
+				});
 
-						if (thumbnailLink != null) {
-							newContent.embed_thumbnail = thumbnailLink.href;
-						}
+				await Promise.all(promises);
 
-						if (data.html) {
-							newContent.embed_content = data.html;
-							newContent.embed_format = 'iframe';
-						}
+				console.log(matches);
+				console.log(matches.length);
+				console.log(events.length);
+				await this.$apollo.mutate({
+					mutation: gql`mutation eventCreateMany($events: String!) {
+					  eventCreateMany(events: $events) {
+						id
+					  }
+					}`,
+					variables: {
+						events: JSON.stringify(events)
 					}
-					catch(error) {
-						newContent = {
-							connection_id_string: self.$data.connection.id,
-							identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + match.url,
-							tags:  [],
-							type: 'webpage',
-							url: match.url
-						};
-					}
-
-					console.log(newContent);
 				});
 			},
 
@@ -241,10 +298,10 @@
 			if (sessionIdCookie != null) {
 				let result = await $apollo.query({
 					query: gql`query getBrowserConnection($browser: String!) {
-					connectionBrowserOne(browser: $browser) {
-						id
-					}
-				}`,
+						connectionBrowserOne(browser: $browser) {
+							id
+						}
+					}`,
 					variables: {
 						browser: bowser.name
 					}
@@ -255,10 +312,10 @@
 				if (existingBrowserConnection == null) {
 					existingBrowserConnection = await $apollo.mutate({
 						mutation: gql`mutation createBrowserConnection($browser: String!) {
-						connectionCreateBrowser(browser: $browser) {
-							id
-						}
-					}`,
+							connectionCreateBrowser(browser: $browser) {
+								id
+							}
+						}`,
 						variables: {
 							browser: bowser.name
 						}

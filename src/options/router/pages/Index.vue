@@ -8,7 +8,14 @@
 					You must manually approve sites to be tracked on a Whitelist.
 					We're not just going to track every single thing you do, because that's creepy.
 					This can either be done by manually entering the site domain here, or by navigating to a site,
-					clicking the LifeScope extension icon in the upper right, and selecting 'Track this site'.
+					clicking the LifeScope extension icon in the upper right, and selecting 'Start tracking this domain'.
+				</p>
+
+				<p>Deleting a domain will stop the extension from tracking that going forward, but it will <u>not</u> get rid of anything we've already created.</p>
+
+				<p>
+					At this time, there is no option for selectively deleting data gathered using this extension.
+					You would need to delete the Connection in the main LifeScope app, delete everything from the whitelist, then add the domains you do want to keep back to the whitelist.
 				</p>
 
 				<div class="whitelist">
@@ -61,6 +68,8 @@
 	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/g;
 	let tagRegex = /#[^#\s]+/g;
 
+	const sliceSize = 1000;
+
 	export default {
 		data() {
 			return {
@@ -72,7 +81,6 @@
 
 		computed: {
 			sortedEntries() {
-				console.log(this.$store.state.whitelist);
 				return this.$store.state.whitelist.sort();
 			},
 		},
@@ -200,6 +208,8 @@
 								}
 							}
 
+							newContent.tagMasks.source = _.uniq(newContent.tagMasks.source);
+
 							let thumbnailLink = _.find(data.links, function(link) {
 								return link.rel.indexOf('thumbnail') >= 0;
 							});
@@ -248,19 +258,31 @@
 
 				await Promise.all(promises);
 
-				console.log(matches);
-				console.log(matches.length);
-				console.log(events.length);
-				await this.$apollo.mutate({
-					mutation: gql`mutation eventCreateMany($events: String!) {
+				let finished = false;
+				let startIndex = 0;
+
+				while (!finished) {
+					let slice = events.slice(startIndex, startIndex + sliceSize);
+
+					if (slice.length > 0) {
+						await this.$apollo.mutate({
+							mutation: gql`mutation eventCreateMany($events: String!) {
 					  eventCreateMany(events: $events) {
 						id
 					  }
 					}`,
-					variables: {
-						events: JSON.stringify(events)
+							variables: {
+								events: JSON.stringify(slice)
+							}
+						});
 					}
-				});
+
+					startIndex += sliceSize;
+
+					if (slice.length < sliceSize) {
+						finished = true;
+					}
+				}
 			},
 
 			deleteWhitelistEntry: function(domain) {
@@ -327,6 +349,3 @@
 		}
 	};
 </script>
-
-<style lang="scss" scoped>
-</style>

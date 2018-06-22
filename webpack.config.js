@@ -11,6 +11,7 @@ const config = {
   context: __dirname + '/src',
   entry: {
     'background': './background.js',
+    'popup/popup': './popup/popup.js',
     'options/options': './options/options.js',
     'site': './styles/site.scss',
   },
@@ -64,6 +65,7 @@ const config = {
     }),
     new CopyWebpackPlugin([
       { from: 'icons', to: 'icons', ignore: ['icon.xcf'] },
+      { from: 'popup/popup.html', to: 'popup/popup.html' },
       { from: 'options/options.html', to: 'options/options.html' },
       {
         from: 'manifest.json',

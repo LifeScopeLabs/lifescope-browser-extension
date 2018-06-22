@@ -7,7 +7,10 @@ let browser = chrome;
 
 export default new Vuex.Store({
 	state: {
-		whitelist: []
+		whitelist: [],
+		url: null,
+		domain: null,
+		connection: {}
 	},
 
 	mutations: {
@@ -22,7 +25,6 @@ export default new Vuex.Store({
 				browser.storage.sync.get(['whitelist'], async function(result) {
 					await commit('SET_USER_SETTINGS', result);
 
-					console.log('User Settings Set');
 					resolve();
 				});
 			})
@@ -30,7 +32,7 @@ export default new Vuex.Store({
 
 		async saveUserSettings({commit}) {
 			browser.storage.sync.set({whitelist: this.state.whitelist}, async function() {
-				console.log('Settings saved');
+				console.log('User Settings Saved');
 			});
 		}
 	}

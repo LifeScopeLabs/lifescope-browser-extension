@@ -35,14 +35,33 @@ function logVisit() {
 	alert('Visit logged!');
 }
 
-let browser = chrome;
+let currentBrowser;
 
-browser.runtime.onInstalled.addListener(function() {
-	browser.webNavigation.onCommitted.addListener(async function() {
-		console.log('Listener added');
+switch(bowser.name) {
+	case ('Chrome'):
+		currentBrowser = chrome;
 
+		break;
+
+	case ('Firefox'):
+		currentBrowser = browser;
+
+		break;
+
+	case ('Microsoft Edge'):
+		currentBrowser = browser;
+
+		break;
+
+	default:
+		currentBrowser = browser;
+}
+
+currentBrowser.runtime.onInstalled.addListener(function() {
+	currentBrowser.webNavigation.onCompleted.addListener(async function() {
+		console.log('Nav completed');
 		let sessionIdCookie = await new Promise(function(resolve, reject) {
-			browser.cookies.get({
+			currentBrowser.cookies.get({
 				url: 'https://app.lifescope.io',
 				name: 'sessionid'
 			}, function(results) {
@@ -54,7 +73,8 @@ browser.runtime.onInstalled.addListener(function() {
 			let result = await apollo.query({
 				query: gql`query getBrowserConnection($browser: String!) {
                             connectionBrowserOne(browser: $browser) {
-                                id
+                                id,
+                                enabled
                             }
                         }`,
 				variables: {
@@ -75,6 +95,8 @@ browser.runtime.onInstalled.addListener(function() {
 						browser: bowser.name
 					}
 				});
+
+				existingBrowserConnection.enabled = true;
 			}
 
 			store.state.connection = existingBrowserConnection;
@@ -84,136 +106,336 @@ browser.runtime.onInstalled.addListener(function() {
 			type: 'loadUserSettings'
 		});
 
-		await new Promise(function(resolve, reject) {
-			browser.tabs.query({
-				active: true
-			}, function(tab) {
-				let active = tab[0];
+		console.log(store.state.connection.enabled);
+		if (store.state.connection.enabled === true) {
+			await new Promise(function(resolve, reject) {
+				currentBrowser.tabs.query({
+					active: true
+				}, function(tab) {
+					let active = tab[0];
 
-				let parsed = url.parse(active.url);
+					let parsed = url.parse(active.url);
 
-				store.state.domain = parsed.hostname;
-				store.state.url = active.url;
+					store.state.domain = parsed.hostname;
+					store.state.url = active.url;
 
-				resolve();
+					resolve();
+				});
 			});
-		});
 
-		console.log(store.state);
-		browser.browserAction.setPopup({
-			popup: 'popup/popup.html'
-		});
+			currentBrowser.browserAction.setPopup({
+				popup: 'popup/popup.html'
+			});
 
-		if (store.state.whitelist.indexOf(store.state.domain) > -1) {
-			let newEvent, newContent;
+			if (store.state.whitelist.indexOf(store.state.domain) > -1) {
+				let newEvent, newContent;
 
-			await new Promise(async function(resolve, reject) {
-				try {
-					let result = await axios.get('https://iframely.lifescope.io/iframely?url=' + store.state.url);
+				await new Promise(async function(resolve, reject) {
+					try {
+						let result = await axios.get('https://iframely.lifescope.io/iframely?url=' + store.state.url);
 
-					let data = result.data;
+						let data = result.data;
 
-					newContent = {
+						newContent = {
+							connection_id_string: store.state.connection.id,
+							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
+							tagMasks: {
+								source: []
+							},
+							url: data.meta.canonical
+						};
+
+						if (data.rel.indexOf('player') >= 0) {
+							newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
+						}
+						else if (data.rel.indexOf('image') >= 0) {
+							newContent.type = 'image';
+						}
+						else {
+							newContent.type = 'web-page';
+						}
+
+						if (data.meta.description) {
+							newContent.text = data.meta.description;
+
+							let tags = newContent.text.match(tagRegex);
+
+							if (tags != null) {
+								for (let j = 0; j < tags.length; j++) {
+									newContent.tagMasks.source.push(tags[j].slice(1));
+								}
+							}
+						}
+
+						if (data.meta.title) {
+							newContent.title = data.meta.title;
+
+							let tags = newContent.title.match(tagRegex);
+
+							if (tags != null) {
+								for (let j = 0; j < tags.length; j++) {
+									newContent.tagMasks.source.push(tags[j].slice(1));
+								}
+							}
+						}
+
+						newContent.tagMasks.source = _.uniq(newContent.tagMasks.source);
+
+						let thumbnailLink = _.find(data.links, function(link) {
+							return link.rel.indexOf('thumbnail') >= 0;
+						});
+
+						if (thumbnailLink != null) {
+							newContent.embed_thumbnail = thumbnailLink.href;
+						}
+
+						if (data.html) {
+							newContent.embed_content = data.html;
+							newContent.embed_format = 'iframe';
+						}
+					}
+					catch(error) {
+						newContent = {
+							connection_id_string: store.state.connection.id,
+							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + store.state.url,
+							tagMasks: {
+								source: []
+							},
+							type: 'web-page',
+							url: store.state.url
+						};
+					}
+
+					let visit = moment();
+
+					newEvent = {
 						connection_id_string: store.state.connection.id,
-						identifier: store.state.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
+						identifier: store.state.connection.id + ':::' + bowser.name + ':::visited:::' + store.state.url + ':::' + visit.utc().toJSON(),
+						content: [newContent],
+						context: 'Visited web page',
+						datetime: visit.utc().toDate(),
+						provider_name: 'Browser Extensions',
 						tagMasks: {
 							source: []
 						},
-						url: data.meta.canonical
+						type: 'viewed'
 					};
 
-					if (data.rel.indexOf('player') >= 0) {
-						newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
-					}
-					else if (data.rel.indexOf('image') >= 0) {
-						newContent.type = 'image';
-					}
-					else {
-						newContent.type = 'web-page';
-					}
+					resolve();
+				});
 
-					if (data.meta.description) {
-						newContent.text = data.meta.description;
-
-						let tags = newContent.text.match(tagRegex);
-
-						if (tags != null) {
-							for (let j = 0; j < tags.length; j++) {
-								newContent.tagMasks.source.push(tags[j].slice(1));
-							}
-						}
-					}
-
-					if (data.meta.title) {
-						newContent.title = data.meta.title;
-
-						let tags = newContent.title.match(tagRegex);
-
-						if (tags != null) {
-							for (let j = 0; j < tags.length; j++) {
-								newContent.tagMasks.source.push(tags[j].slice(1));
-							}
-						}
-					}
-
-					newContent.tagMasks.source = _.uniq(newContent.tagMasks.source);
-
-					let thumbnailLink = _.find(data.links, function(link) {
-						return link.rel.indexOf('thumbnail') >= 0;
-					});
-
-					if (thumbnailLink != null) {
-						newContent.embed_thumbnail = thumbnailLink.href;
-					}
-
-					if (data.html) {
-						newContent.embed_content = data.html;
-						newContent.embed_format = 'iframe';
-					}
-				}
-				catch(error) {
-					newContent = {
-						connection_id_string: store.state.connection.id,
-						identifier: store.state.connection.id + ':::' + bowser.name + ':::' + store.state.url,
-						tagMasks:  {
-							source: []
-						},
-						type: 'web-page',
-						url: store.state.url
-					};
-				}
-
-				let visit = moment();
-
-				newEvent = {
-					connection_id_string: store.state.connection.id,
-					identifier: store.state.connection.id + ':::' + bowser.name + ':::visited:::' + store.state.url + ':::' + visit.utc().toJSON(),
-					content: [newContent],
-					context: 'Visited web page',
-					datetime: visit.utc().toDate(),
-					provider_name: 'Browser Extensions',
-					tagMasks: {
-						source: []
-					},
-					type: 'viewed'
-				};
-
-				resolve();
-			});
-
-			console.log(newEvent);
-
-			console.log(apollo);
-			await apollo.mutate({
-				mutation: gql`mutation eventCreateMany($events: String!) {
+				await apollo.mutate({
+					mutation: gql`mutation eventCreateMany($events: String!) {
                               eventCreateMany(events: $events) {
                                 id
                               }
                             }`,
-				variables: {
-					events: JSON.stringify([newEvent])
-				}
-			});
+					variables: {
+						events: JSON.stringify([newEvent])
+					}
+				});
+			}
+
+			//Check to see if any whitelisted domains didn't finish their initial data crawl, and run it if they didn't (as long as they're not on Edge).
+			if (bowser.name !== 'Microsoft Edge') {
+				_.each(store.state.whitelist, async function(whitelistItem) {
+					if (store.state.whitelistPending.indexOf(whitelistItem) === -1 && store.state.whitelistHistory.indexOf(whitelistItem) === -1) {
+						console.log(whitelistItem + ' has not been run and is not running, so it will be started.');
+						let regexp = new RegExp(whitelistItem);
+
+						store.state.whitelistPending.push(whitelistItem);
+
+						store.dispatch({
+							type: 'saveUserSettings'
+						});
+
+						let baseResults = await new Promise(function(resolve, reject) {
+							currentBrowser.history.search({
+								text: '',
+								startTime: 0,
+								maxResults: 1000000
+							}, function(results) {
+								resolve(results);
+							});
+						});
+
+						console.log(baseResults);
+
+						let matches = _.filter(baseResults, function(item) {
+							let hostname = url.parse(item.url).hostname;
+
+							return regexp.test(hostname);
+						});
+
+						let promises = _.map(matches, async function(match) {
+							match.visits = [];
+
+							let hydratedResults = await new Promise(function(resolve, reject) {
+								currentBrowser.history.getVisits({
+									url: match.url
+								}, function(results) {
+									resolve(results);
+								});
+							});
+
+							_.each(hydratedResults, function(result, index) {
+								if (index === 0 || (index > 0 && Math.abs(moment(result.visitTime) - moment(hydratedResults[index - 1].visitTime)) > 1000)) {
+									match.visits.push(result.visitTime)
+								}
+							});
+
+							return Promise.resolve();
+						});
+
+						await Promise.all(promises);
+
+						promises = [];
+
+						let sliceSize = 1000;
+						let events = [];
+
+						console.log('MATCHES!!!!!');
+						console.log(matches);
+						_.each(matches, async function(match) {
+							let result, newContent;
+
+							promises.push(new Promise(async function(resolve, reject) {
+								try {
+									result = await axios.get('https://iframely.lifescope.io/iframely?url=' + match.url);
+
+									let data = result.data;
+
+									newContent = {
+										connection_id_string: store.state.connection.id,
+										identifier: store.state.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
+										tagMasks: {
+											source: []
+										},
+										url: data.meta.canonical
+									};
+
+									if (data.rel.indexOf('player') >= 0) {
+										newContent.type = audioSites.indexOf(data.meta.site) >= 0 ? 'audio' : 'video';
+									}
+									else if (data.rel.indexOf('image') >= 0) {
+										newContent.type = 'image';
+									}
+									else {
+										newContent.type = 'web-page';
+									}
+
+									if (data.meta.description) {
+										newContent.text = data.meta.description;
+
+										let tags = newContent.text.match(tagRegex);
+
+										if (tags != null) {
+											for (let j = 0; j < tags.length; j++) {
+												newContent.tagMasks.source.push(tags[j].slice(1));
+											}
+										}
+									}
+
+									if (data.meta.title) {
+										newContent.title = data.meta.title;
+
+										let tags = newContent.title.match(tagRegex);
+
+										if (tags != null) {
+											for (let j = 0; j < tags.length; j++) {
+												newContent.tagMasks.source.push(tags[j].slice(1));
+											}
+										}
+									}
+
+									newContent.tagMasks.source = _.uniq(newContent.tagMasks.source);
+
+									let thumbnailLink = _.find(data.links, function(link) {
+										return link.rel.indexOf('thumbnail') >= 0;
+									});
+
+									if (thumbnailLink != null) {
+										newContent.embed_thumbnail = thumbnailLink.href;
+									}
+
+									if (data.html) {
+										newContent.embed_content = data.html;
+										newContent.embed_format = 'iframe';
+									}
+								}
+								catch(error) {
+									newContent = {
+										connection_id_string: store.state.connection.id,
+										identifier: store.state.connection.id + ':::' + bowser.name + ':::' + match.url,
+										tagMasks: {
+											source: []
+										},
+										type: 'web-page',
+										url: match.url
+									};
+								}
+
+								_.each(match.visits, function(visit) {
+									let newEvent = {
+										connection_id_string: store.state.connection.id,
+										identifier: store.state.connection.id + ':::' + bowser.name + ':::visited:::' + match.url + ':::' + moment(visit).utc().toJSON(),
+										content: [newContent],
+										context: 'Visited web page',
+										datetime: moment(visit).utc().toDate(),
+										provider_name: 'Browser Extensions',
+										tagMasks: {
+											source: []
+										},
+										type: 'viewed'
+									};
+
+									events.push(newEvent);
+
+									resolve();
+								});
+							}));
+						});
+
+						await Promise.all(promises);
+
+						console.log(events);
+						let finished = false;
+						let startIndex = 0;
+
+						while (!finished) {
+							let slice = events.slice(startIndex, startIndex + sliceSize);
+
+							if (slice.length > 0) {
+								await apollo.mutate({
+									mutation: gql`mutation eventCreateMany($events: String!) {
+                                      eventCreateMany(events: $events) {
+                                        id
+                                      }
+                                    }`,
+									variables: {
+										events: JSON.stringify(slice)
+									}
+								});
+							}
+
+							startIndex += sliceSize;
+
+							if (slice.length < sliceSize) {
+								finished = true;
+							}
+						}
+
+						_.pull(store.state.whitelistPending, whitelistItem);
+						store.state.whitelistHistory.push(whitelistItem);
+
+						store.state.whitelistHistory = _.uniq(store.state.whitelistHistory);
+
+						store.dispatch({
+							type: 'saveUserSettings'
+						});
+					}
+				});
+			}
 		}
 	});
 });

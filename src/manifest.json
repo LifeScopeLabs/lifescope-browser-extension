@@ -6,7 +6,6 @@
   "permissions": [
     "*://*.lifescope.io/",
     "cookies",
-    "declarativeContent",
     "history",
     "storage",
     "tabs",
@@ -23,13 +22,15 @@
     "48": "icons/android-chrome-48x48.png"
   },
 
-  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
 
   "background": {
     "scripts": [
       "background.js"
-    ],
-    "persistent": false
+    ]
   },
 
   "browser_action": {

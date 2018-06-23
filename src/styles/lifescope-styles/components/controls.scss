@@ -506,6 +506,9 @@ input[type='radio'], input[type='checkbox'] {
 
 .whitelist {
   margin-top: 2em;
+  padding-top: 1em;
+
+  border-top: 1px solid $border-color;
 
   .text-box {
     margin-left: 0;
@@ -533,5 +536,9 @@ input[type='radio'], input[type='checkbox'] {
         }
       }
     }
+  }
+
+  h3 {
+    margin-top: 1em;
   }
 }

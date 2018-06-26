@@ -59,7 +59,6 @@ switch(bowser.name) {
 
 currentBrowser.runtime.onInstalled.addListener(function() {
 	currentBrowser.webNavigation.onCompleted.addListener(async function() {
-		console.log('Nav completed');
 		let sessionIdCookie = await new Promise(function(resolve, reject) {
 			currentBrowser.cookies.get({
 				url: 'https://app.lifescope.io',
@@ -85,10 +84,11 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 			let existingBrowserConnection = result.data.connectionBrowserOne;
 
 			if (existingBrowserConnection == null) {
-				existingBrowserConnection = await apollo.mutate({
+				result = await apollo.mutate({
 					mutation: gql`mutation createBrowserConnection($browser: String!) {
                                 connectionCreateBrowser(browser: $browser) {
-                                    id
+                                    id,
+                                    enabled
                                 }
                             }`,
 					variables: {
@@ -96,17 +96,16 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 					}
 				});
 
-				existingBrowserConnection.enabled = true;
+				existingBrowserConnection = result.data.connectionCreateBrowser;
 			}
 
-			store.state.connection = existingBrowserConnection;
+			store.state.connection = existingBrowserConnection || {};
 		}
 
 		await store.dispatch({
 			type: 'loadUserSettings'
 		});
 
-		console.log(store.state.connection.enabled);
 		if (store.state.connection.enabled === true) {
 			await new Promise(function(resolve, reject) {
 				currentBrowser.tabs.query({
@@ -127,7 +126,13 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 				popup: 'popup/popup.html'
 			});
 
-			if (store.state.whitelist.indexOf(store.state.domain) > -1) {
+			if (store.state.whitelist.indexOf(store.state.domain) > -1 && store.state.lastUrl !== store.state.url) {
+				store.state.lastUrl = store.state.url;
+
+				store.dispatch({
+					type: 'saveUserSettings'
+				});
+
 				let newEvent, newContent;
 
 				await new Promise(async function(resolve, reject) {
@@ -239,11 +244,18 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 			//Check to see if any whitelisted domains didn't finish their initial data crawl, and run it if they didn't (as long as they're not on Edge).
 			if (bowser.name !== 'Microsoft Edge') {
 				_.each(store.state.whitelist, async function(whitelistItem) {
-					if (store.state.whitelistPending.indexOf(whitelistItem) === -1 && store.state.whitelistHistory.indexOf(whitelistItem) === -1) {
-						console.log(whitelistItem + ' has not been run and is not running, so it will be started.');
+					//Handling the edge case where the user adds something to the whitelist, opens a new page and triggers the domain's entry to whitelistPending,
+					//but then closes the browser before that fetch and/or Event generation is completed.
+					//Pending is an object where the keys are the domains and the values are the time at which the history grab was initiated.
+					//If the grab is more than 5 minutes old, it's relatively safe to say that it didn't complete.
+					if (store.state.whitelistPending[whitelistItem] && moment().utc().subtact(5, 'minutes').toDate() > store.state.whitelistPending[whitelistItem]) {
+						delete store.state.whitelistPending[whitelistItem];
+					}
+
+					if (Object.keys(store.state.whitelistPending).indexOf(whitelistItem) === -1 && store.state.whitelistHistory.indexOf(whitelistItem) === -1) {
 						let regexp = new RegExp(whitelistItem);
 
-						store.state.whitelistPending.push(whitelistItem);
+						store.state.whitelistPending[whitelistItem] = moment().utc().toDate();
 
 						store.dispatch({
 							type: 'saveUserSettings'
@@ -258,8 +270,6 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 								resolve(results);
 							});
 						});
-
-						console.log(baseResults);
 
 						let matches = _.filter(baseResults, function(item) {
 							let hostname = url.parse(item.url).hostname;
@@ -294,8 +304,6 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 						let sliceSize = 1000;
 						let events = [];
 
-						console.log('MATCHES!!!!!');
-						console.log(matches);
 						_.each(matches, async function(match) {
 							let result, newContent;
 
@@ -398,7 +406,6 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 						await Promise.all(promises);
 
-						console.log(events);
 						let finished = false;
 						let startIndex = 0;
 
@@ -425,7 +432,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 							}
 						}
 
-						_.pull(store.state.whitelistPending, whitelistItem);
+						delete store.state.whitelistPending[whitelistItem];
 						store.state.whitelistHistory.push(whitelistItem);
 
 						store.state.whitelistHistory = _.uniq(store.state.whitelistHistory);

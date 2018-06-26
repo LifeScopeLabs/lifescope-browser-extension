@@ -8,17 +8,18 @@ let browser = chrome;
 export default new Vuex.Store({
 	state: {
 		whitelist: [],
-		whitelistPending: [],
+		whitelistPending: {},
 		whitelistHistory: [],
 		url: null,
 		domain: null,
-		connection: {}
+		connection: {},
+		lastUrl: null
 	},
 
 	mutations: {
 		SET_USER_SETTINGS: async function(state, storage) {
 			state.whitelist = storage.whitelist || [];
-			state.whitelistPending = storage.whitelistPending || [];
+			state.whitelistPending = storage.whitelistPending || {};
 			state.whitelistHistory = storage.whitelistHistory || [];
 		}
 	},
@@ -40,7 +41,6 @@ export default new Vuex.Store({
 				whitelistPending: this.state.whitelistPending,
 				whitelistHistory: this.state.whitelistHistory
 			}, async function() {
-				console.log('User Settings Saved');
 			});
 		}
 	}

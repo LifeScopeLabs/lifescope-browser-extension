@@ -1,7 +1,7 @@
 <template>
-  <button v-if="$data.connection && $data.connection.enabled === true && domainWhitelisted === true" class="danger" v-on:click="deleteWhitelistEntry">Stop tracking this domain</button>
-  <button v-else-if="$data.connection && $data.connection.enabled === true && domainWhitelisted === false" class="primary" v-on:click="addWhitelistEntry">Start tracking this domain</button>
-  <a v-else-if="$data.connection == null || $data.connection.enabled === false" style="text-decoration: none" href="https://app.lifescope.io/settings/connections" target="_blank"><button>Enable Connection in LifeScope Settings</button></a>
+  <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteWhitelistEntry">Stop tracking this domain</button>
+  <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addWhitelistEntry">Start tracking this domain</button>
+  <!--<a v-else-if="$data.connection == null || $data.connection.enabled === false" style="text-decoration: none" href="https://app.lifescope.io/settings/connections" target="_blank"><button>Enable Connection in LifeScope Settings</button></a>-->
 </template>
 
 <script>
@@ -54,70 +54,35 @@
 
 	    methods: {
 		    addWhitelistEntry: async function() {
-		    	let self = this;
+				if (this.$data.domain.match(domainRegex) == null) {
+					return;
+				}
 
-			    if (this.$data.connection.id == null) {
-				    let sessionIdCookie = await new Promise(function(resolve, reject) {
-					    currentBrowser.cookies.get({
-						    url: 'https://app.lifescope.io',
-						    name: 'sessionid'
-					    }, function(results) {
-						    resolve(results);
-					    });
-				    });
+				let domainWhitelistExists = this.$store.state.whitelist.indexOf(this.$data.domain);
 
-				    if (sessionIdCookie != null) {
-					    let result = await self.$apollo.query({
-						    query: gql`query getBrowserConnection($browser: String!) {
-								connectionBrowserOne(browser: $browser) {
-									id,
-									enabled
-								}
-							}`,
-						    variables: {
-							    browser: bowser.name
-						    },
-						    fetchPolicy: 'network-only'
-					    });
+				if (domainWhitelistExists === -1) {
+					this.$store.state.whitelist.push(this.$data.domain);
 
-					    this.$data.connection = result.data.connectionBrowserOne || {};
-				    }
-			    }
-
-		    	if (this.$data.connection && this.$data.connection.enabled) {
-
-				    if (this.$data.domain.match(domainRegex) == null) {
-					    return;
-				    }
-
-				    let domainWhitelistExists = this.$store.state.whitelist.indexOf(this.$data.domain);
-
-				    if (domainWhitelistExists === -1) {
-					    this.$store.state.whitelist.push(this.$data.domain);
-
-					    this.$store.dispatch({
-						    type: 'saveUserSettings'
-					    });
-				    }
-			    }
+					this.$store.dispatch({
+						type: 'saveUserSettings'
+					});
+				}
 		    },
 
 		    deleteWhitelistEntry: function() {
-		    	if (this.$data.connection && this.$data.connection.enabled === true) {
-				    let self = this;
+				let self = this;
 
-				    let index = _.findIndex(this.$store.state.whitelist, function(item) {
-					    return item === self.$data.domain;
-				    });
+				let index = _.findIndex(this.$store.state.whitelist, function(item) {
+					return item === self.$data.domain;
+				});
 
-				    if (index >= 0) {
-					    this.$store.state.whitelist.splice(index, 1);
+				if (index >= 0) {
+					this.$store.state.whitelist.splice(index, 1);
 
-					    this.$store.dispatch({
-						    type: 'saveUserSettings'
-					    });
-				    }
-			    }
+					this.$store.dispatch({
+						type: 'saveUserSettings'
+					});
+				}
 		    }
 	    },
 
@@ -157,14 +122,17 @@
             if (sessionIdCookie != null) {
                 let result = await $apollo.query({
                     query: gql`query getBrowserConnection($browser: String!) {
-                            connectionBrowserOne(browser: $browser) {
-                                id,
-                                enabled
-                            }
-                        }`,
+                        connectionBrowserOne(browser: $browser) {
+                            id,
+                            enabled,
+                            provider_id,
+                            provider_id_string
+                        }
+                    }`,
                     variables: {
                         browser: bowser.name
-                    }
+                    },
+	                fetchPolicy: 'no-cache'
                 });
 
                 let existingBrowserConnection = result.data.connectionBrowserOne;
@@ -181,6 +149,9 @@
 
                 this.$data.connection = existingBrowserConnection || {};
             }
+            else {
+            	this.$data.connection = {};
+			}
         }
     };
 </script>

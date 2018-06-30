@@ -17,7 +17,7 @@ module.exports = function(env) {
       'site': './styles/site.scss',
     },
     output: {
-      path: __dirname + '/dist',
+      path: __dirname + '/dist/' + env.browser,
       filename: '[name].js',
     },
     resolve: {

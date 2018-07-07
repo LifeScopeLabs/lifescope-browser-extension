@@ -1,53 +1,54 @@
 <template>
 	<div class="page">
 		<div class="boxed-group">
-			<div class="title">Tracked Pages</div>
+			<div class="title">LifeScope Browser Extension Settings</div>
 
 			<div class="padded paragraphed">
 				<p>
-					You must manually approve sites to be tracked on a Whitelist.
-					We're not just going to track every single thing you do, because that's creepy.
-					This can either be done by manually entering the site domain here, or by navigating to a site,
-					clicking the LifeScope extension icon in the upper right, and selecting 'Start tracking this domain'.
+					LifeScope can help you organize and search your time on the web.
+					We only record visits to sites you care about and have explicitly approved us to track.
+					You must manually approve sites to be tracked.
+					This can be done by navigating to a site, clicking the LifeScope extension icon in the upper right, and selecting 'Start tracking this domain'.
+					You can also manually add the domain to the list below.
 				</p>
 
 				<p v-if="browserName === 'Chrome' || browserName === 'Firefox'">
-					When you add a domain to the whitelist, we will retrieve your entire history on that domain from your browser and make Events from it.
-					Any further visits to that domain will also result in the creation of Events.
-					Note that these actions will only occur if you are logged into LifeScope on that device, as we use your LifeScope credentials to authenticate the Event generation.
+					When you add a domain to the whitelist, we will retrieve your entire history on that domain from your browser.
+					Any further visits to that domain will also be recorded.
+					Note that these actions will only occur if you are logged into LifeScope on that device.
 				</p>
 				<p v-else-if="browserName === 'Microsoft Edge'">
 					Microsoft Edge unfortunately does not let us access your browser history at this time.
-					We therefore cannot make Events from any previous visits to domains you whitelist; we can only do so for future visits.
-					Note that you must be logged into LifeScope for visits to be recorded in LifeScope.
+					We therefore cannot retrieve any previous visits to domains to approve, and can only track future visits.
+					Note that you must be logged into LifeScope on that device for future visits to be recorded.
 				</p>
 
-				<p>Deleting a domain will stop the extension from tracking that domain going forward, but it will <u>not</u> get rid of anything we've already created.</p>
+				<p>Deleting a domain from the list will stop the extension from tracking that domain going forward, but it will <u>not</u> delete anything already recorded for that domain.</p>
 
 				<p>
 					At this time, there is no option for selectively deleting data gathered using this extension.
-					You would need to delete the Connection in the main LifeScope app, which will clear your whitelist, then add the domains you do want to keep back to the whitelist.
+					You would need to delete the Connection in the main LifeScope app, which will clear your whitelist, then add the domains you do want to keep back to the list.
 				</p>
 
 				<div v-if="$data.connection && $data.connection.enabled === false">
 					<h2>Extension Connection is disabled</h2>
 
 					<div>
-						<p>The Connection for this browser extension is currently disabled. No new Events are being recorded for the sites in the Domain Whitelist.</p>
-						<p>Any new domains that you add to the whitelist will not have their history mapped until the Connection is enabled.</p>
-						<p>Any activity on whitelisted sites that occurs when the Connection is disabled will not be restored upon the Connection being enabled.</p>
+						<p>The Connection for this browser extension is currently disabled. No new visits to any of the domains in your list are being recorded.</p>
+						<p>Any new domains that you add to the list will not have their history mapped until the Connection is enabled.</p>
+						<p>Any activity on listed sites that occurs when the Connection is disabled will not be restored upon the Connection being enabled.</p>
 					</div>
 				</div>
 
 				<div class="whitelist">
-					<h2>Domain Whitelist</h2>
+					<h3>Tracked Domain List</h3>
 
 					<div>
 						<p>You can enter the domains of websites you want to track here. Some examples of domains are
 							'google.com', 'wikipedia.org', and 'dmv.ca.gov'. Basically, it's everything after the
 							'https://' that ends with '.com', '.org', etc.</p>
 						<p>If you don't want to enter this information manually, go to the site you want to track, click
-							on the button for the LifeScope extension, and select 'track this page'.</p>
+							on the button for the LifeScope extension, and select 'Start tracking this domain'.</p>
 					</div>
 
 					<h3>Enter new domains here</h3>
@@ -58,11 +59,10 @@
 							</div>
 							<i class="fa fa-plus" v-on:click="addWhitelistEntry"></i>
 							<span v-if="$data.showDomainError === true">That was not a valid domain.</span>
-							<span v-if="$data.showDisabledError === true">Please enable the Connection for this browser extension in your <a href="https://app.lifescope.io/settings/connections" target="_blank">LifeScope settings.</a></span>
 						</div>
 					</form>
 
-					<h3>Your currently-tracked domains</h3>
+					<h3>Your currently tracked domains</h3>
 					<div class="entries">
 						<div v-for="entry in sortedEntries" class="entry">
 							<span>{{ entry }}</span>
@@ -114,7 +114,6 @@
 				loggedIn: false,
 				newDomain: '',
 				connection: {},
-				showDisabledError: false,
 				showDomainError: false
 			};
 		},

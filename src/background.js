@@ -250,7 +250,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 						content: [newContent],
 						context: 'Visited web page',
 						datetime: visit.utc().toDate(),
-						provider_name: 'Browser Extensions',
+						provider_name: bowser.name + ' Extension',
 						tagMasks: {
 							source: []
 						},
@@ -429,7 +429,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 										content: [newContent],
 										context: 'Visited web page',
 										datetime: moment(visit).utc().toDate(),
-										provider_name: 'Browser Extensions',
+										provider_name: bowser.name + ' Extension',
 										tagMasks: {
 											source: []
 										},

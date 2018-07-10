@@ -100,7 +100,7 @@ module.exports = function(env) {
         },
       ]),
       new WebpackShellPlugin({
-        onBuildEnd: ['node scripts/remove-evals.js'],
+        onBuildEnd: ['node scripts/remove-evals.js ' + env.browser],
       }),
     ],
   };

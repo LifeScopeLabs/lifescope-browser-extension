@@ -6,6 +6,7 @@ const fs = require('fs');
 const BUNDLE_DIR = path.join(__dirname, '../dist');
 const bundles = [
   'background.js',
+  'popup/popup.js',
   'options/options.js'
 ];
 
@@ -44,8 +45,10 @@ const removeEvals = (file) => {
 };
 
 const main = () => {
+  let browser = process.argv[2];
+
   bundles.forEach(bundle => {
-    removeEvals(path.join(BUNDLE_DIR, bundle))
+    removeEvals(path.join(BUNDLE_DIR, browser, bundle))
       .then(() => console.info(`Bundle ${bundle}: OK`))
       .catch(console.error);
   });

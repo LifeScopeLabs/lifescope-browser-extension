@@ -85,7 +85,7 @@ module.exports = function(env) {
               if (env.browser === 'firefox') {
                 jsonContent.applications = {
                   gecko: {
-                    id: 'lifescope@lifescope.io'
+                    id: '{9e187a53-8d6f-4d44-9010-87309bc67b9e}'
                   }
                 }
               }

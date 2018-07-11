@@ -1,6 +1,6 @@
 {
   "name": "lifescope-browser-extension",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Search and Explore the Internet of You",
   "author": "Kyle Baran <kbaran@bitscoop.com>",
   "scripts": {

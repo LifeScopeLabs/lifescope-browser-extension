@@ -27,3 +27,16 @@ The current valid build commands are:
 
 * `npm run build:chrome`
 * `npm run build:firefox`
+
+These commands will place the built files in dist/<browser>.
+
+To zip up the files for submission to extension/add-on stores, run
+
+`gulp bundle:<browser>`
+
+e.g.
+
+* `gulp bundle:chrome`
+* `gulp bundle:firefox`
+
+This command will place the .zip file in dist/

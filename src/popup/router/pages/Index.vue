@@ -1,28 +1,27 @@
 <template>
   <div class="flexbox flex-column flex-x-center">
-    <div class="margin-bottom-1em" style="text-align: center;">
+    <div class="login-status">
       <a href="https://app.lifescope.io" target="_blank">
         <div v-if="$data.loggedIn === false">Log in to LifeScope to enable this extension</div>
         <div v-else-if="$data.loggedIn === true">You are logged into LifeScope</div>
       </a>
     </div>
-    <div class="flexbox">
-      <button v-if="domainWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteDomainWhitelistEntry" style="margin-right: 0.5em;">Stop tracking this domain</button>
-      <button v-else-if="domainWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addDomainWhitelistEntry" style="margin-right: 0.5em">Start tracking this domain</button>
+    <div class="flexbox flex-column">
+      <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteDomainWhitelistEntry" style="margin-bottom: 0.5em">Stop tracking this domain</button>
+      <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addDomainWhitelistEntry" style="margin-bottom: 0.5em">Start tracking this domain</button>
       <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this site</button>
       <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this site</button>
+      <button v-on:click="openOptionsPage">Open Extension Options</button>
     </div>
-    <button v-on:click="openOptionsPage">Open Extension Options</button>
 
-    <div id="tagging" class="flexbox flex-column flex-x-center content padded actions" v-if="domainWhitelisted === true && $data.loggedIn === true">
+    <div id="tagging" class="flexbox flex-column flex-x-center content actions" v-if="(domainWhitelisted === true || siteWhitelisted === true) && $data.loggedIn === true">
       <div class="flexbox flex-x-center">
         <div class="title">#Tag this page</div>
-        <i class="fa fa-question-circle"><a href="lifescope.io/how-to" target="_blank"></a></i>
+        <a class="how-to" href="https://lifescope.io/how-to" target="_blank"><i class="fa fa-question-circle"></i></a>
       </div>
 
       <div class="tagging">
         <form v-on:submit.prevent="addTag">
-          <div>Tags</div>
           <div class="add-tag">
             <span>#</span>
             <input type="text" placeholder="Add a tag" v-model="tagName">

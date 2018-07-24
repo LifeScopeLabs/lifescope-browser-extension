@@ -1,12 +1,13 @@
-import Vue from "vue";
-import App from "./App";
-import store from "../store";
-import router from "./router";
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 
-import { ApolloClient } from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import VueApollo from 'vue-apollo'
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+
+import App from './App';
+import store from '../store';
+import router from './router';
 
 const httpLink = new HttpLink({
 	uri: 'https://api.lifescope.io/gql',
@@ -27,7 +28,7 @@ const apolloProvider = new VueApollo({
 
 /* eslint-disable no-new */
 new Vue({
-	el: "#app",
+	el: '#app',
 	provide: apolloProvider.provide(),
 	store,
 	router,

@@ -106,6 +106,39 @@ gulp.task('bundle:firefox', function() {
 });
 
 
+gulp.task('bundle:raw', function() {
+	const path = require('path');
+
+	const zip = require('gulp-zip');
+	const rename = require('gulp-rename');
+
+	let basename = path.basename(process.cwd());
+	let renameExpression = new RegExp('^' + basename);
+
+	return gulp.src([
+		'.gitignore',
+		'gulpfile.js',
+		'scripts/**',
+		'src/**',
+		'LICENSE',
+		'package.json',
+		'README.md',
+		'webpack.config.js'
+	], {
+		nodir: true,
+		dot: true,
+		base: '.'
+	})
+		.pipe(rename(function(path) {
+			path.dirname = path.dirname.replace(renameExpression, pkg.name);
+
+			return path;
+		}))
+		.pipe(zip(pkg.name + '-raw-' + pkg.version + '.zip'))
+		.pipe(gulp.dest('dist'));
+});
+
+
 gulp.task('clean', function() {
 	const clean = require('gulp-clean');
 

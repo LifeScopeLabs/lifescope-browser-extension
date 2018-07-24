@@ -1,17 +1,51 @@
 <template>
-  <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteWhitelistEntry">Stop tracking this domain</button>
-  <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addWhitelistEntry">Start tracking this domain</button>
-  <!--<a v-else-if="$data.connection == null || $data.connection.enabled === false" style="text-decoration: none" href="https://app.lifescope.io/settings/connections" target="_blank"><button>Enable Connection in LifeScope Settings</button></a>-->
+  <div class="flexbox flex-column flex-x-center">
+    <div class="margin-bottom-1em" style="text-align: center;">
+      <a href="https://app.lifescope.io" target="_blank">
+        <div v-if="$data.loggedIn === false">Log in to LifeScope to enable this extension</div>
+        <div v-else-if="$data.loggedIn === true">You are logged into LifeScope</div>
+      </a>
+    </div>
+    <div class="flexbox">
+      <button v-if="domainWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteDomainWhitelistEntry" style="margin-right: 0.5em;">Stop tracking this domain</button>
+      <button v-else-if="domainWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addDomainWhitelistEntry" style="margin-right: 0.5em">Start tracking this domain</button>
+      <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this site</button>
+      <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this site</button>
+    </div>
+    <button v-on:click="openOptionsPage">Open Extension Options</button>
+
+    <div id="tagging" class="flexbox flex-column flex-x-center content padded actions" v-if="domainWhitelisted === true && $data.loggedIn === true">
+      <div class="flexbox flex-x-center">
+        <div class="title">#Tag this page</div>
+        <i class="fa fa-question-circle"><a href="lifescope.io/how-to" target="_blank"></a></i>
+      </div>
+
+      <div class="tagging">
+        <form v-on:submit.prevent="addTag">
+          <div>Tags</div>
+          <div class="add-tag">
+            <span>#</span>
+            <input type="text" placeholder="Add a tag" v-model="tagName">
+            <i class="fa fa-plus" v-on:click="addTag"></i>
+          </div>
+          <div class="tags">
+            <div v-if="$data.item && $data.item.tags" v-for="tag in $data.item.tags">
+              <span v-on:click="searchTag(tag)">#{{ tag }}</span>
+              <i class="delete fa fa-times" v-on:click="removeTag(tag)"></i>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 	import url from 'url';
 
 	import _ from 'lodash';
-	import axios from 'axios';
 	import bowser from 'bowser';
 	import gql from 'graphql-tag';
-	import moment from 'moment';
 
 	let currentBrowser;
 
@@ -35,25 +69,65 @@
 			currentBrowser = browser;
 	}
 
-	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/g;
+	let domainRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+/;
+	let siteRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)+\/?$/;
 
     export default {
         data() {
           return {
+          	  loggedIn: false,
           	  connection: {},
           	  domain: null,
-              url: null
+              url: null,
+              item: {},
+              tagName: null
           };
         },
 
         computed: {
 	        domainWhitelisted: function() {
-		        return this.$store.state.whitelist.indexOf(this.$data.domain) > -1;
+	        	let self = this;
+		        let whitelistHit = false;
+
+		        _.each(this.$store.state.whitelist, function(item) {
+			        let domainRegex = new RegExp(item);
+
+			        if (domainRegex.test(self.$data.domain) === true) {
+				        whitelistHit = true;
+
+				        return;
+			        }
+		        });
+
+		        return whitelistHit;
+	        },
+
+	        siteWhitelisted: function() {
+		        let self = this;
+		        let whitelistHit = false;
+
+		        _.each(this.$store.state.whitelist, function(item) {
+			        let parsedUrl = url.parse('//' + item, false, true);
+
+			        if (parsedUrl.host && parsedUrl.path) {
+				        let condensedUrl = parsedUrl.host + parsedUrl.path;
+
+				        let tempRegex = new RegExp(condensedUrl);
+
+				        if (siteRegex.test(item) === true && tempRegex.test(self.$data.url) === true) {
+					        whitelistHit = true;
+
+					        return;
+				        }
+			        }
+		        });
+
+		        return whitelistHit;
 	        },
         },
 
 	    methods: {
-		    addWhitelistEntry: async function() {
+		    addDomainWhitelistEntry: async function() {
 				if (this.$data.domain.match(domainRegex) == null) {
 					return;
 				}
@@ -69,24 +143,194 @@
 				}
 		    },
 
-		    deleteWhitelistEntry: function() {
+		    deleteDomainWhitelistEntry: function() {
 				let self = this;
 
-				let index = _.findIndex(this.$store.state.whitelist, function(item) {
-					return item === self.$data.domain;
-				});
+                _.eachRight(this.$store.state.whitelist, function(item, i) {
+                	let domainRegex = new RegExp(item);
 
-				if (index >= 0) {
-					this.$store.state.whitelist.splice(index, 1);
+                	if (domainRegex.test(self.$data.domain) === true) {
+		                self.$store.state.whitelist.splice(i, 1);
+                    }
+                });
 
-					this.$store.dispatch({
-						type: 'saveUserSettings'
-					});
-				}
-		    }
+				// let index = _.findIndex(this.$store.state.whitelist, function(item) {
+				// 	return item === self.$data.domain;
+				// });
+
+                this.$store.dispatch({
+                    type: 'saveUserSettings'
+                });
+		    },
+
+		    addSiteWhitelistEntry: async function() {
+			    if (this.$data.url.match(siteRegex) == null) {
+				    return;
+			    }
+
+			    let parsedUrl = url.parse(this.$data.url);
+
+			    let condensedUrl = parsedUrl.host + parsedUrl.path;
+
+			    let domainWhitelistExists = this.$store.state.whitelist.indexOf(condensedUrl);
+
+			    if (domainWhitelistExists === -1) {
+				    this.$store.state.whitelist.push(condensedUrl);
+
+				    this.$store.dispatch({
+					    type: 'saveUserSettings'
+				    });
+			    }
+		    },
+
+		    deleteSiteWhitelistEntry: function() {
+			    let self = this;
+
+			    let parsedUrl = url.parse(this.$data.url);
+
+			    let condensedUrl = parsedUrl.host + parsedUrl.path;
+
+			    let index = _.findIndex(this.$store.state.whitelist, function(item) {
+				    return item === condensedUrl;
+			    });
+
+			    if (index >= 0) {
+				    this.$store.state.whitelist.splice(index, 1);
+
+				    this.$store.dispatch({
+					    type: 'saveUserSettings'
+				    });
+			    }
+		    },
+
+            openOptionsPage: function() {
+		    	if (currentBrowser.runtime.openOptionsPage) {
+				    currentBrowser.runtime.openOptionsPage();
+			    }
+			    else {
+				    window.open(currentBrowser.runtime.getURL('options.html'));
+                }
+            },
+
+		    addTag: async function() {
+			    let strippedTag = this.$data.tagName.replace(/[^a-zA-Z0-9\s-]/, '').replace(/\s+/g, ' ');
+			    let slugifiedTag = strippedTag.toLowerCase().replace(/\s/g, '-');
+
+			    if (slugifiedTag.length === 0) {
+				    this.$data.tagName = 0;
+
+				    return;
+			    }
+
+			    await this.$apollo.mutate({
+				    mutation: gql`mutation tagContent($id: String, $tags: [String]) {
+						tagContent (id: $id, tags: $tags) {
+						  id
+						}
+					}`,
+				    variables: {
+					    id: this.$data.item.id,
+					    tags: [slugifiedTag]
+				    }
+			    });
+
+			    if (!this.$data.item.tagMasks) {
+				    this.$data.item.tagMasks = {};
+			    }
+
+			    if (this.$data.item.tagMasks && !this.$data.item.tagMasks.added) {
+				    this.$data.item.tagMasks.added = [];
+			    }
+
+			    if (this.$data.item.tagMasks && !this.$data.item.tagMasks.removed) {
+				    this.$data.item.tagMasks.removed = [];
+			    }
+
+			    let addedIndex = _.findIndex(this.$data.item.tagMasks.added, function(item) {
+				    return item === strippedTag;
+			    });
+
+			    let removedIndex = _.findIndex(this.$data.item.tagMasks.removed, function(item) {
+				    return item === strippedTag;
+			    });
+
+			    if (addedIndex === -1) {
+				    this.$data.item.tagMasks.added.push(strippedTag);
+			    }
+
+			    if (removedIndex >= 0) {
+				    this.$data.item.tagMasks.removed.splice(removedIndex, 1);
+			    }
+
+			    this.$data.tagName = '';
+		    },
+
+		    removeTag: async function(tag) {
+			    let strippedTag = tag.replace(/[^a-zA-Z0-9\s-]/, '').replace(/\s+/g, ' ');
+			    let slugifiedTag = strippedTag.toLowerCase().replace(/\s/g, '-');
+
+			    await this.$apollo.mutate({
+				    mutation: gql`mutation untagContent($id: String, $tags: [String]) {
+						untagContent (id: $id, tags: $tags) {
+						  id
+						}
+					}`,
+				    variables: {
+					    id: this.$data.item.id,
+					    tags: [slugifiedTag]
+				    }
+			    });
+
+			    if (!this.$data.item.tagMasks) {
+				    this.$data.item.tagMasks = {};
+			    }
+
+			    if (this.$data.item.tagMasks && !this.$data.item.tagMasks.added) {
+				    this.$data.item.tagMasks.added = [];
+			    }
+
+			    if (this.$data.item.tagMasks && !this.$data.item.tagMasks.removed) {
+				    this.$data.item.tagMasks.removed = [];
+			    }
+
+			    let addedIndex = _.findIndex(this.$data.item.tagMasks.added, function(item) {
+				    return item === strippedTag;
+			    });
+
+			    let removedIndex = _.findIndex(this.$data.item.tagMasks.removed, function(item) {
+				    return item === strippedTag;
+			    });
+
+			    if (addedIndex >= 0) {
+				    this.$data.item.tagMasks.added.splice(addedIndex, 1);
+			    }
+
+			    if (removedIndex === -1) {
+				    this.$data.item.tagMasks.removed.push(strippedTag);
+			    }
+		    },
+
+            searchTag: async function(tag) {
+		    	let result = await this.$apollo.mutate({
+                    mutation: gql`mutation searchUpsert($query: String, $filters: String, $favorited: Boolean, $icon: String, $icon_color: String, $name: String){
+                        searchUpsert(filters: $filters, query: $query, favorited: $favorited, icon: $icon, icon_color: $icon_color, name: $name) {
+                            id
+                        }
+                    }`,
+                    variables: {
+                    	query: '#' + tag
+                    }
+                });
+
+		    	let data = result.data.searchUpsert;
+
+		    	if (data && data.id) {
+		    		window.open('https://app.lifescope.io/explore?qid=' + data.id);
+                }
+            }
 	    },
 
-        mounted: async function() {
+        beforeMount: async function() {
         	let self = this;
 
             let $apollo = this.$apollo.provider.defaultClient;
@@ -120,6 +364,8 @@
             });
 
             if (sessionIdCookie != null) {
+            	this.$data.loggedIn = true;
+
                 let result = await $apollo.query({
                     query: gql`query getBrowserConnection($browser: String!) {
                         connectionBrowserOne(browser: $browser) {
@@ -150,163 +396,75 @@
                 this.$data.connection = existingBrowserConnection || {};
             }
             else {
+            	this.$data.loggedIn = false;
             	this.$data.connection = {};
 			}
+
+	        let active;
+
+	        await new Promise(function(resolve, reject) {
+		        currentBrowser.tabs.query({
+			        active: true
+		        }, function(tab) {
+			        active = tab[0].url;
+
+			        resolve();
+		        });
+	        });
+
+	        if (this.$data.connection) {
+		        let content = await $apollo.query({
+			        query: gql`query contentFindByIdentifier($identifier: String!) {
+                      contentFindByIdentifier(identifier: $identifier) {
+                        id,
+                        tagMasks {
+                          added,
+                          removed,
+                          source
+                        }
+                      }
+                    }`,
+			        variables: {
+				        identifier: this.$data.connection.id + ':::' + bowser.name + ':::' + active,
+			        }
+		        });
+
+		        let item = _.get(content, 'data.contentFindByIdentifier');
+
+		        if (item != null) {
+			        Object.defineProperty(item, 'tags', {
+				        get: function() {
+					        let tags = [];
+
+					        if (item.tagMasks) {
+						        _.forEach(item.tagMasks.source, function(tag) {
+							        if (tags.indexOf(tag) === -1) {
+								        tags.push(tag);
+							        }
+						        });
+
+						        _.forEach(item.tagMasks.added, function(tag) {
+							        if (tags.indexOf(tag) === -1) {
+								        tags.push(tag);
+							        }
+						        });
+
+						        _.forEach(item.tagMasks.removed, function(tag) {
+							        let index = tags.indexOf(tag);
+
+							        if (index > -1) {
+								        tags.splice(index, 1);
+							        }
+						        });
+					        }
+
+					        return tags;
+				        }
+			        });
+
+			        this.$data.item = item;
+		        }
+	        }
         }
     };
 </script>
-
-<style lang="scss" scoped>
-  button {
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    padding: 0.5em 1em;
-    font-size: 1em;
-    font-weight: 700;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-  //line-height: 20px;
-    color: #333;
-    white-space: nowrap;
-    vertical-align: middle;
-    background-color: #eee;
-    background-image: linear-gradient(#fcfcfc, #eee);
-    border: 1px solid #d5d5d5;
-  //border-radius: 3px;
-    border-radius: 1px;
-    user-select: none;
-    -webkit-appearance: none; // Corrects inability to style clickable `input` types in iOS.
-  outline: none;
-    text-decoration: none;
-
-  &:hover {
-     background-color: #ddd;
-     background-image: linear-gradient(#eee, #ddd);
-     border-color: #ccc;
-   }
-
-  &:active {
-     background-color: #dcdcdc;
-     background-image: none;
-     border-color: #b5b5b5;
-     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
-   }
-
-  &.round {
-     border-radius: 7px;
-   }
-
-  &:disabled,
-  &.disabled {
-  &,
-  &:hover {
-     color: rgba(102, 102, 102, 0.5);
-     cursor: default;
-     background-color: rgba(229, 229, 229, 0.5);
-     background-image: none;
-     border-color: rgba(197, 197, 197, 0.5);
-     box-shadow: none;
-   }
-  }
-
-  &.danger {
-     color: #900;
-
-  &:hover {
-     color: #fff;
-     background-color: #b33630;
-     background-image: linear-gradient(#dc5f59, #b33630);
-     border-color: #cd504a;
-   }
-
-  &:active {
-     color: #fff;
-     background-color: #b33630;
-     background-image: none;
-     border-color: darken(#cd504a, 15%);
-   }
-
-  &:disabled,
-  &.disabled {
-  &,
-  &:hover {
-     color: #cb7f7f;
-     background-color: #efefef;
-     background-image: linear-gradient(#fefefe, #efefef);
-     border-color: #e1e1e1;
-   }
-  }
-  }
-
-  &.primary {
-     $background: #60b044;
-     $border: #4a993e;
-     $gradient: #8add6d;
-
-   //$background: #009E23;
-   //$border: #00CE2E;
-   //$gradient: #00E432;
-
-     color: #fff;
-     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
-     background-color: $background;
-     background-image: linear-gradient($gradient, $background);
-     border-color: darken($background, 2%);
-
-  &:hover {
-     color: #fff;
-     background-color: darken($background, 5%);
-     background-image: linear-gradient(darken($gradient, 5%), darken($background, 5%));
-     border-color: $border;
-   }
-
-  &:active {
-     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-     background-color: darken($background, 5%);
-     background-image: none;
-     border-color: darken($border, 5%);
-   }
-
-  &:disabled,
-  &.disabled {
-  &,
-  &:hover {
-     color: #fefefe;
-     background-color: #add39f;
-     background-image: linear-gradient(#c3ecb4, #add39f);
-     border-color: #b9dcac #b9dcac #a7c89b;
-   }
-  }
-  }
-
-  &.blue {
-   //$background: #009E23;
-   //$border: #00CE2E;
-   //$gradient: #00E432;
-
-     color: #fff;
-     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
-
-  &:hover {
-     color: #fff;
-   }
-
-  &:active {
-     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-     background-image: none;
-   }
-
-  &:disabled,
-  &.disabled {
-  &,
-  &:hover {
-     color: #fefefe;
-     background-color: #add39f;
-     background-image: linear-gradient(#c3ecb4, #add39f);
-     border-color: #b9dcac #b9dcac #a7c89b;
-   }
-  }
-  }
-  }
-</style>

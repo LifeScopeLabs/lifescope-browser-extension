@@ -154,6 +154,18 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 					return;
 				}
+
+				let parsedUrl = url.parse(store.state.url);
+
+				let condensedUrl = parsedUrl.host + parsedUrl.path;
+
+				domainRegex = new RegExp(condensedUrl);
+
+				if (domainRegex.test(store.state.url)) {
+					whitelistHit = true;
+
+					return;
+				}
 			});
 
 			if (whitelistHit && store.state.lastUrl !== store.state.url) {
@@ -272,6 +284,8 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 					fetchPolicy: 'no-cache'
 				});
 			}
+
+			store.state.lastUrl = store.state.url;
 
 			//Check to see if any whitelisted domains didn't finish their initial data crawl, and run it if they didn't (as long as they're not on Edge).
 			if (bowser.name !== 'Microsoft Edge') {

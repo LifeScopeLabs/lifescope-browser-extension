@@ -5,6 +5,10 @@
 
 body {
   margin: 0;
+
+  &.popup {
+    margin: 8px;
+  }
 }
 
 * {
@@ -27,6 +31,11 @@ html {
     text-shadow: none;
     color: $highlight-color !important;
     background-color: $highlight-background;
+  }
+
+  &.popup {
+    font-size: 20px;
+    height: initial;
   }
 }
 
@@ -460,10 +469,102 @@ html.dark {
     &:hover {
       color: $blue;
     }
+
+    @media #{$maxwidth768},#{$mobile} {
+      font-size: 3em;
+    }
+  }
+
+  .text-box {
+    @media #{$maxwidth768},#{$mobile} {
+      font-size: 3em;
+    }
   }
 
   span {
     margin-left: 1em;
     font-size: 1.2em;
+  }
+}
+
+.margin-bottom-1em {
+  margin-bottom: 1em;
+}
+
+.open-modal {
+  cursor: pointer;
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+#tagging {
+  .title {
+    font-weight: bold;
+  }
+
+  i {
+    margin-left: 0.2em;
+    cursor: pointer;
+
+    &:hover {
+      color: $blue;
+    }
+  }
+
+  .tagging {
+    margin-top: 1em;
+    text-align: left;
+
+    form > :first-child {
+      text-align: center;
+    }
+
+    .add-tag {
+      @include flexbox;
+      @include flex-x-center;
+
+      input {
+        margin-left: 0;
+        margin-right: 0;
+
+        &[type='text'] {
+          @include flex-grow;
+
+          padding: 0.1em 0.2em;
+          border: 1px solid $border-color;
+          font-size: 1em;
+        }
+      }
+    }
+
+    .tags {
+      @include flexbox;
+      @include flex-column;
+
+      color: $blue;
+
+      & > div {
+        @include flexbox;
+
+        margin: 0.2em 0;
+
+        & > span {
+          @include flex-grow;
+          cursor: pointer;
+
+          &:hover {
+            color: $green;
+          }
+        }
+
+        & > i {
+          &:hover {
+            color: $red;
+          }
+        }
+      }
+    }
   }
 }

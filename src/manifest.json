@@ -1,6 +1,8 @@
 {
   "name": "LifeScope Browser Extension",
 
+  "author": "LifeScope Labs",
+
   "description": "Search and explore the internet of you",
 
   "permissions": [

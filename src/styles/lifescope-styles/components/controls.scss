@@ -521,6 +521,11 @@ input[type='radio'], input[type='checkbox'] {
 
     color: $blue;
 
+
+    @media #{$maxwidth768},#{$mobile} {
+      font-size: 3em;
+    }
+
     & > .entry {
       margin: 0.2em 0;
 

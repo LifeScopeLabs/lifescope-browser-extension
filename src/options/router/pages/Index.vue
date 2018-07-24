@@ -3,7 +3,7 @@
 		<div class="boxed-group">
 			<div class="title">LifeScope Browser Extension Settings</div>
 
-			<div class="padded paragraphed">
+			<div class="padded paragraphed mobile-margin">
 				<p>
 					LifeScope can help you organize and search your time on the web.
 					We only record visits to sites you care about and have explicitly approved us to track.
@@ -58,7 +58,7 @@
 								<input type="text" placeholder="google.com" v-model="newDomain">
 							</div>
 							<i class="fa fa-plus" v-on:click="addWhitelistEntry"></i>
-							<span v-if="$data.showDomainError === true">That was not a valid domain.</span>
+							<span v-if="$data.invalidDomain === true">That was not a valid domain or site.</span>
 						</div>
 					</form>
 
@@ -105,7 +105,8 @@
 			currentBrowser = browser;
 	}
 
-	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/g;
+	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/;
+	let siteRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)+\/?$/;
 
 	export default {
 		data() {
@@ -114,7 +115,8 @@
 				loggedIn: false,
 				newDomain: '',
 				connection: {},
-				showDomainError: false
+				invalidDomain: false,
+				invalidSite: false
 			};
 		},
 
@@ -140,11 +142,11 @@
 
 				this.$data.newDomain = '';
 
-				if (this.$data.domain.match(domainRegex) == null) {
-					this.$data.showDomainError = true;
+				if (this.$data.domain.match(domainRegex) == null && this.$data.domain.match(siteRegex) == null) {
+					this.$data.invalidDomain = true;
 
 					setTimeout(function() {
-						self.$data.showDomainError = false;
+						self.$data.invalidDomain = false;
 					}, 2000);
 
 					return;

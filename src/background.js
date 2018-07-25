@@ -159,9 +159,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 				let condensedUrl = parsedUrl.host + parsedUrl.path;
 
-				domainRegex = new RegExp(condensedUrl);
-
-				if (domainRegex.test(store.state.url)) {
+				if (domainRegex.test(condensedUrl)) {
 					whitelistHit = true;
 
 					return;

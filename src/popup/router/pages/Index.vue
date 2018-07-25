@@ -9,12 +9,12 @@
     <div class="flexbox flex-column">
       <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteDomainWhitelistEntry" style="margin-bottom: 0.5em">Stop tracking this domain</button>
       <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addDomainWhitelistEntry" style="margin-bottom: 0.5em">Start tracking this domain</button>
-      <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this site</button>
-      <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this site</button>
+      <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this URL</button>
+      <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this URL</button>
       <button v-on:click="openOptionsPage">Open Extension Options</button>
     </div>
 
-    <div id="tagging" class="flexbox flex-column flex-x-center content actions" v-if="(domainWhitelisted === true || siteWhitelisted === true) && $data.loggedIn === true">
+    <div id="tagging" class="flexbox flex-column flex-x-center content actions" v-if="(domainWhitelisted === true || siteWhitelisted === true) && $data.loggedIn === true && $data.item.id != null">
       <div class="flexbox flex-x-center">
         <div class="title">#Tag this page</div>
         <a class="how-to" href="https://lifescope.io/how-to" target="_blank"><i class="fa fa-question-circle"></i></a>

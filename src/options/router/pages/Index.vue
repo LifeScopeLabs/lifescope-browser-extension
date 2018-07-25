@@ -8,8 +8,8 @@
 					LifeScope can help you organize and search your time on the web.
 					We only record visits to sites you care about and have explicitly approved us to track.
 					You must manually approve sites to be tracked.
-					This can be done by navigating to a site, clicking the LifeScope extension icon in the upper right, and selecting 'Start tracking this domain'.
-					You can also manually add the domain to the list below.
+					This can be done by navigating to a site, clicking the LifeScope extension icon in the upper right, and selecting either 'Start tracking this domain' or 'Start tracking this URL'.
+					You can also manually add the domain or URL to the list below.
 				</p>
 
 				<p v-if="browserName === 'Chrome' || browserName === 'Firefox'">
@@ -41,17 +41,18 @@
 				</div>
 
 				<div class="whitelist">
-					<h3>Tracked Domain List</h3>
+					<h3>Tracked Domain/URL List</h3>
 
 					<div>
-						<p>You can enter the domains of websites you want to track here. Some examples of domains are
+						<p>You can enter the domains or URLs of websites you want to track here. Some examples of domains are
 							'google.com', 'wikipedia.org', and 'dmv.ca.gov'. Basically, it's everything after the
-							'https://' that ends with '.com', '.org', etc.</p>
+							'https://' that ends with '.com', '.org', etc. An example of a URL is 'en.wikipedia.org/Main_Page';
+							it's the domain, plus everything after each '/', but not any '?' or '#' or anything following those characters.</p>
 						<p>If you don't want to enter this information manually, go to the site you want to track, click
-							on the button for the LifeScope extension, and select 'Start tracking this domain'.</p>
+							on the button for the LifeScope extension, and select 'Start tracking this domain' or 'Start tracking this URL'.</p>
 					</div>
 
-					<h3>Enter new domains here</h3>
+					<h3>Enter new domains/URLs here</h3>
 					<form v-on:submit.prevent="addWhitelistEntry">
 						<div class="add-domain flexbox flex-x-center">
 							<div class="text-box">
@@ -62,7 +63,7 @@
 						</div>
 					</form>
 
-					<h3>Your currently tracked domains</h3>
+					<h3>Your currently tracked domains/URLs</h3>
 					<div class="entries">
 						<div v-for="entry in sortedEntries" class="entry">
 							<span>{{ entry }}</span>

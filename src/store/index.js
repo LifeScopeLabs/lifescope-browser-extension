@@ -1,9 +1,33 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import url from 'url';
+
+import Vue from 'vue';
+import Vuex from 'vuex';
+import bowser from 'bowser';
 
 Vue.use(Vuex);
 
-let browser = chrome;
+let currentBrowser;
+
+switch(bowser.name) {
+	case ('Chrome'):
+		currentBrowser = chrome;
+
+		break;
+
+	case ('Firefox'):
+		currentBrowser = browser;
+
+		break;
+
+	case ('Microsoft Edge'):
+		currentBrowser = browser;
+
+		break;
+
+	default:
+		currentBrowser = browser;
+}
+
 
 export default new Vuex.Store({
 	state: {
@@ -27,7 +51,7 @@ export default new Vuex.Store({
 	actions: {
 		loadUserSettings({ commit }) {
 			return new Promise(function(resolve, reject) {
-				browser.storage.sync.get(['whitelist', 'whitelistPending', 'whitelistHistory'], async function(result) {
+				currentBrowser.storage.sync.get(['whitelist', 'whitelistPending', 'whitelistHistory'], async function(result) {
 					await commit('SET_USER_SETTINGS', result);
 
 					resolve();
@@ -36,12 +60,11 @@ export default new Vuex.Store({
 		},
 
 		async saveUserSettings({commit}) {
-			browser.storage.sync.set({
+			currentBrowser.storage.sync.set({
 				whitelist: this.state.whitelist,
 				whitelistPending: this.state.whitelistPending,
 				whitelistHistory: this.state.whitelistHistory
-			}, async function() {
-			});
+			}, async function() {});
 		}
 	}
 });

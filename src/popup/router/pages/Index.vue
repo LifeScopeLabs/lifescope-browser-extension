@@ -14,6 +14,14 @@
       <button v-on:click="openOptionsPage">Open Extension Options</button>
     </div>
 
+  	<div v-if="domainPending" class="crawl-pending">
+		Your history on this domain is currently being parsed. You may be unable to tag this page until the process is complete.
+	</div>
+
+  	<div v-if="sitePending" class="crawl-pending">
+	 	 Your history on this URL is currently being parsed. You may be unable to tag this page until the process is complete.
+  	</div>
+
     <div id="tagging" class="flexbox flex-column flex-x-center content actions" v-if="(domainWhitelisted === true || siteWhitelisted === true) && $data.loggedIn === true && $data.item.id != null">
       <div class="flexbox flex-x-center">
         <div class="title">#Tag this page</div>
@@ -105,7 +113,47 @@
 		        let self = this;
 		        let whitelistHit = false;
 
-		        _.each(this.$store.state.whitelist, function(item) {
+		        _.each(this.$store.state.whitelist, function(value, item) {
+			        let parsedUrl = url.parse('//' + item, false, true);
+
+			        if (parsedUrl.host && parsedUrl.path) {
+				        let condensedUrl = parsedUrl.host + parsedUrl.path;
+
+				        let tempRegex = new RegExp(condensedUrl);
+
+				        if (siteRegex.test(item) === true && tempRegex.test(self.$data.url) === true) {
+					        whitelistHit = true;
+
+					        return;
+				        }
+			        }
+		        });
+
+		        return whitelistHit;
+	        },
+
+	        domainPending: function() {
+		        let self = this;
+		        let whitelistHit = false;
+
+		        _.each(this.$store.state.whitelistPending, function(item) {
+			        let domainRegex = new RegExp(item);
+
+			        if (domainRegex.test(self.$data.domain) === true) {
+				        whitelistHit = true;
+
+				        return;
+			        }
+		        });
+
+		        return whitelistHit;
+	        },
+
+	        sitePending: function() {
+		        let self = this;
+		        let whitelistHit = false;
+
+		        _.each(this.$store.state.whitelistPending, function(value, item) {
 			        let parsedUrl = url.parse('//' + item, false, true);
 
 			        if (parsedUrl.host && parsedUrl.path) {
@@ -136,8 +184,13 @@
 				if (domainWhitelistExists === -1) {
 					this.$store.state.whitelist.push(this.$data.domain);
 
-					this.$store.dispatch({
+					await this.$store.dispatch({
 						type: 'saveUserSettings'
+					});
+
+					currentBrowser.runtime.sendMessage({
+						data: 'triggerHistoryCrawl',
+                        connection: this.$data.connection
 					});
 				}
 		    },
@@ -176,8 +229,13 @@
 			    if (domainWhitelistExists === -1) {
 				    this.$store.state.whitelist.push(condensedUrl);
 
-				    this.$store.dispatch({
+				    await this.$store.dispatch({
 					    type: 'saveUserSettings'
+				    });
+
+				    currentBrowser.runtime.sendMessage({
+					    data: 'triggerHistoryCrawl',
+					    connection: this.$data.connection
 				    });
 			    }
 		    },
@@ -362,42 +420,48 @@
                 });
             });
 
-            if (sessionIdCookie != null) {
-            	this.$data.loggedIn = true;
+            await new Promise(async function(resolve, reject) {
+				if (sessionIdCookie != null) {
+					self.$data.loggedIn = true;
 
-                let result = await $apollo.query({
-                    query: gql`query getBrowserConnection($browser: String!) {
-                        connectionBrowserOne(browser: $browser) {
-                            id,
-                            enabled,
-                            provider_id,
-                            provider_id_string
-                        }
-                    }`,
-                    variables: {
-                        browser: bowser.name
-                    },
-	                fetchPolicy: 'no-cache'
-                });
+					let result = await $apollo.query({
+						query: gql`query getBrowserConnection($browser: String!) {
+							connectionBrowserOne(browser: $browser) {
+								id,
+								enabled,
+								provider_id,
+								provider_id_string
+							}
+						}`,
+						variables: {
+							browser: bowser.name
+						},
+						fetchPolicy: 'no-cache'
+					});
 
-                let existingBrowserConnection = result.data.connectionBrowserOne;
+					let existingBrowserConnection = result.data.connectionBrowserOne;
 
-                if (existingBrowserConnection == null) {
-                    this.$store.state.whitelist = [];
-                    this.$store.state.whitelistPending = {};
-                    this.$store.state.whitelistHistory = [];
+					if (existingBrowserConnection == null) {
+						self.$store.state.whitelist = [];
+						self.$store.state.whitelistPending = {};
+						self.$store.state.whitelistHistory = [];
 
-	                this.$store.dispatch({
-		                type: 'saveUserSettings'
-	                });
-                }
+						self.$store.dispatch({
+							type: 'saveUserSettings'
+						});
+					}
 
-                this.$data.connection = existingBrowserConnection || {};
-            }
-            else {
-            	this.$data.loggedIn = false;
-            	this.$data.connection = {};
-			}
+					self.$data.connection = existingBrowserConnection || {};
+
+					resolve();
+				}
+				else {
+					self.$data.loggedIn = false;
+					self.$data.connection = {};
+
+					resolve();
+				}
+            });
 
 	        let active;
 
@@ -411,9 +475,12 @@
 		        });
 	        });
 
-	        if (this.$data.connection) {
-		        let content = await $apollo.query({
-			        query: gql`query contentFindByIdentifier($identifier: String!) {
+	        getPageContent();
+
+	        async function getPageContent() {
+		        if (self.$data.connection) {
+			        let content = await $apollo.query({
+				        query: gql`query contentFindByIdentifier($identifier: String!) {
                       contentFindByIdentifier(identifier: $identifier) {
                         id,
                         tagMasks {
@@ -423,47 +490,60 @@
                         }
                       }
                     }`,
-			        variables: {
-				        identifier: this.$data.connection.id + ':::' + bowser.name + ':::' + active,
-			        }
-		        });
-
-		        let item = _.get(content, 'data.contentFindByIdentifier');
-
-		        if (item != null) {
-			        Object.defineProperty(item, 'tags', {
-				        get: function() {
-					        let tags = [];
-
-					        if (item.tagMasks) {
-						        _.forEach(item.tagMasks.source, function(tag) {
-							        if (tags.indexOf(tag) === -1) {
-								        tags.push(tag);
-							        }
-						        });
-
-						        _.forEach(item.tagMasks.added, function(tag) {
-							        if (tags.indexOf(tag) === -1) {
-								        tags.push(tag);
-							        }
-						        });
-
-						        _.forEach(item.tagMasks.removed, function(tag) {
-							        let index = tags.indexOf(tag);
-
-							        if (index > -1) {
-								        tags.splice(index, 1);
-							        }
-						        });
-					        }
-
-					        return tags;
-				        }
+				        variables: {
+					        identifier: self.$data.connection.id + ':::' + bowser.name + ':::' + active,
+				        },
+				        fetchPolicy: 'no-cache'
 			        });
 
-			        this.$data.item = item;
+			        let item = _.get(content, 'data.contentFindByIdentifier');
+
+			        if (item != null) {
+				        Object.defineProperty(item, 'tags', {
+					        get: function() {
+						        let tags = [];
+
+						        if (item.tagMasks) {
+							        _.forEach(item.tagMasks.source, function(tag) {
+								        if (tags.indexOf(tag) === -1) {
+									        tags.push(tag);
+								        }
+							        });
+
+							        _.forEach(item.tagMasks.added, function(tag) {
+								        if (tags.indexOf(tag) === -1) {
+									        tags.push(tag);
+								        }
+							        });
+
+							        _.forEach(item.tagMasks.removed, function(tag) {
+								        let index = tags.indexOf(tag);
+
+								        if (index > -1) {
+									        tags.splice(index, 1);
+								        }
+							        });
+						        }
+
+						        return tags;
+					        }
+				        });
+
+				        self.$data.item = item;
+			        }
 		        }
 	        }
+
+	        currentBrowser.runtime.onMessage.addListener(function(message, callback) {
+		        if (message.data === 'userSettingsSaved') {
+                    self.$store.dispatch({
+                        type: 'loadUserSettings'
+                    });
+		        }
+                else if (message.data = 'runComplete') {
+		        	getPageContent();
+                }
+	        });
         }
     };
 </script>

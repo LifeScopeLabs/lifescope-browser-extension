@@ -71,6 +71,10 @@ async function triggerHistoryCrawl(connection) {
 			//The latter case sometimes happens for reasons I can't really deduce, but trying again should work.
 			if ((store.state.whitelistPending[whitelistItem] && moment().utc().subtract(5, 'minutes').toDate() > store.state.whitelistPending[whitelistItem]) || (store.state.whitelistPending[whitelistItem] instanceof Date === false)) {
 				delete store.state.whitelistPending[whitelistItem];
+
+				await store.dispatch({
+					type: 'saveUserSettings'
+				});
 			}
 
 			if (Object.keys(store.state.whitelistPending).indexOf(whitelistItem) === -1 && store.state.whitelistHistory.indexOf(whitelistItem) === -1) {
@@ -271,7 +275,7 @@ async function triggerHistoryCrawl(connection) {
 
 				store.state.whitelistHistory = _.uniq(store.state.whitelistHistory);
 
-				store.dispatch({
+				await store.dispatch({
 					type: 'saveUserSettings'
 				});
 

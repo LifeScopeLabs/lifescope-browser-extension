@@ -113,7 +113,7 @@
 		        let self = this;
 		        let whitelistHit = false;
 
-		        _.each(this.$store.state.whitelist, function(value, item) {
+		        _.each(this.$store.state.whitelist, function(item) {
 			        let parsedUrl = url.parse('//' + item, false, true);
 
 			        if (parsedUrl.host && parsedUrl.path) {
@@ -136,7 +136,7 @@
 		        let self = this;
 		        let whitelistHit = false;
 
-		        _.each(this.$store.state.whitelistPending, function(item) {
+		        _.each(this.$store.state.whitelistPending, function(value, item) {
 			        let domainRegex = new RegExp(item);
 
 			        if (domainRegex.test(self.$data.domain) === true) {

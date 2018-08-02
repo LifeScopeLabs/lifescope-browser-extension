@@ -101,9 +101,14 @@ async function triggerHistoryCrawl(connection) {
 				});
 
 				let matches = _.filter(baseResults, function(item) {
-					let hostname = url.parse(item.url).hostname;
+					let parsed = url.parse(item.url);
 
-					return regexp.test(hostname);
+					if (item.url === whitelistItem || item.url === whitelistItem + '/') {
+						return true;
+					}
+					else {
+						return regexp.test(parsed.hostname);
+					}
 				});
 
 				let promises = _.map(matches, async function(match) {
@@ -130,7 +135,7 @@ async function triggerHistoryCrawl(connection) {
 
 				promises = [];
 
-				let sliceSize = 1000;
+				let sliceSize = 200;
 				let events = [];
 
 				_.each(matches, async function(match) {
@@ -244,23 +249,30 @@ async function triggerHistoryCrawl(connection) {
 				await Promise.all(promises);
 
 				let finished = false;
+				let failed = false;
 				let startIndex = 0;
 
 				while (!finished) {
 					let slice = events.slice(startIndex, startIndex + sliceSize);
 
 					if (slice.length > 0) {
-						await apollo.mutate({
-							mutation: gql`mutation eventCreateMany($events: String!) {
+						try {
+							await apollo.mutate({
+								mutation: gql`mutation eventCreateMany($events: String!) {
                                       eventCreateMany(events: $events) {
                                         id
                                       }
                                     }`,
-							variables: {
-								events: JSON.stringify(slice)
-							},
-							fetchPolicy: 'no-cache'
-						});
+								variables: {
+									events: JSON.stringify(slice)
+								},
+								fetchPolicy: 'no-cache'
+							});
+						} catch(err) {
+							failed = true;
+
+							break;
+						}
 					}
 
 					startIndex += sliceSize;
@@ -270,22 +282,24 @@ async function triggerHistoryCrawl(connection) {
 					}
 				}
 
-				delete store.state.whitelistPending[whitelistItem];
-				store.state.whitelistHistory.push(whitelistItem);
+				if (failed === false) {
+					delete store.state.whitelistPending[whitelistItem];
+					store.state.whitelistHistory.push(whitelistItem);
 
-				store.state.whitelistHistory = _.uniq(store.state.whitelistHistory);
+					store.state.whitelistHistory = _.uniq(store.state.whitelistHistory);
 
-				await store.dispatch({
-					type: 'saveUserSettings'
-				});
+					await store.dispatch({
+						type: 'saveUserSettings'
+					});
 
-				currentBrowser.runtime.sendMessage({
-					data: 'userSettingsSaved'
-				});
+					currentBrowser.runtime.sendMessage({
+						data: 'userSettingsSaved'
+					});
 
-				currentBrowser.runtime.sendMessage({
-					data: 'runComplete'
-				});
+					currentBrowser.runtime.sendMessage({
+						data: 'runComplete'
+					});
+				}
 			}
 		});
 	}
@@ -303,8 +317,9 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 		});
 
 		if (sessionIdCookie != null) {
-			let result = await apollo.query({
-				query: gql`query getBrowserConnection($browser: String!) {
+			try {
+				let result = await apollo.query({
+					query: gql`query getBrowserConnection($browser: String!) {
                             connectionBrowserOne(browser: $browser) {
                                 id,
                                 enabled,
@@ -312,11 +327,16 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 								provider_id_string
                             }
                         }`,
-				variables: {
-					browser: bowser.name
-				},
-				fetchPolicy: 'no-cache'
-			});
+					variables: {
+						browser: bowser.name
+					},
+					fetchPolicy: 'no-cache'
+				});
+			} catch(err) {
+				store.state.connection = {};
+
+				return;
+			}
 
 			let existingBrowserConnection = result.data.connectionBrowserOne;
 
@@ -390,7 +410,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 				let parsedUrl = url.parse(store.state.url);
 
-				let condensedUrl = parsedUrl.host + parsedUrl.path;
+				let condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host + parsedUrl.pathname;
 
 				if (domainRegex.test(condensedUrl)) {
 					whitelistHit = true;
@@ -503,17 +523,19 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 					resolve();
 				});
 
-				await apollo.mutate({
-					mutation: gql`mutation eventCreateMany($events: String!) {
+				try {
+					await apollo.mutate({
+						mutation: gql`mutation eventCreateMany($events: String!) {
                               eventCreateMany(events: $events) {
                                 id
                               }
                             }`,
-					variables: {
-						events: JSON.stringify([newEvent])
-					},
-					fetchPolicy: 'no-cache'
-				});
+						variables: {
+							events: JSON.stringify([newEvent])
+						},
+						fetchPolicy: 'no-cache'
+					});
+				} catch(err) {}
 			}
 
 			store.state.lastUrl = store.state.url;

@@ -77,7 +77,7 @@
 	}
 
 	let domainRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+/;
-	let siteRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)+\/?$/;
+	let siteRegex = /^(http(s)?:\/\/)([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)*\/?/;
 
     export default {
         data() {
@@ -114,10 +114,14 @@
 		        let whitelistHit = false;
 
 		        _.each(this.$store.state.whitelist, function(item) {
-			        let parsedUrl = url.parse('//' + item, false, true);
+			        let parsedUrl = url.parse(item);
 
-			        if (parsedUrl.host && parsedUrl.path) {
-				        let condensedUrl = parsedUrl.host + parsedUrl.path;
+			        if (parsedUrl.protocol && parsedUrl.host && parsedUrl.pathname) {
+				        let condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host;
+
+				        if (parsedUrl.pathname !== '/') {
+				        	condensedUrl += parsedUrl.pathname
+                        }
 
 				        let tempRegex = new RegExp(condensedUrl);
 
@@ -154,10 +158,14 @@
 		        let whitelistHit = false;
 
 		        _.each(this.$store.state.whitelistPending, function(value, item) {
-			        let parsedUrl = url.parse('//' + item, false, true);
+			        let parsedUrl = url.parse(item);
 
-			        if (parsedUrl.host && parsedUrl.path) {
-				        let condensedUrl = parsedUrl.host + parsedUrl.path;
+			        if (parsedUrl.protocol && parsedUrl.host && parsedUrl.pathname) {
+				        let condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host;
+
+				        if (parsedUrl.pathname !== '/') {
+					        condensedUrl += parsedUrl.pathname
+				        }
 
 				        let tempRegex = new RegExp(condensedUrl);
 
@@ -206,10 +214,6 @@
                     }
                 });
 
-				// let index = _.findIndex(this.$store.state.whitelist, function(item) {
-				// 	return item === self.$data.domain;
-				// });
-
                 this.$store.dispatch({
                     type: 'saveUserSettings'
                 });
@@ -222,7 +226,11 @@
 
 			    let parsedUrl = url.parse(this.$data.url);
 
-			    let condensedUrl = parsedUrl.host + parsedUrl.path;
+			    let condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host;
+
+			    if (parsedUrl.pathname !== '/') {
+				    condensedUrl += parsedUrl.pathname
+			    }
 
 			    let domainWhitelistExists = this.$store.state.whitelist.indexOf(condensedUrl);
 
@@ -245,7 +253,7 @@
 
 			    let parsedUrl = url.parse(this.$data.url);
 
-			    let condensedUrl = parsedUrl.host + parsedUrl.path;
+			    let condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host + parsedUrl.pathname;
 
 			    let index = _.findIndex(this.$store.state.whitelist, function(item) {
 				    return item === condensedUrl;
@@ -422,10 +430,11 @@
 
             await new Promise(async function(resolve, reject) {
 				if (sessionIdCookie != null) {
-					self.$data.loggedIn = true;
+					let result;
 
-					let result = await $apollo.query({
-						query: gql`query getBrowserConnection($browser: String!) {
+                    try {
+						result = await $apollo.query({
+							query: gql`query getBrowserConnection($browser: String!) {
 							connectionBrowserOne(browser: $browser) {
 								id,
 								enabled,
@@ -433,11 +442,19 @@
 								provider_id_string
 							}
 						}`,
-						variables: {
-							browser: bowser.name
-						},
-						fetchPolicy: 'no-cache'
-					});
+							variables: {
+								browser: bowser.name
+							},
+							fetchPolicy: 'no-cache'
+						});
+					} catch(err) {
+						self.$data.loggedIn = false;
+						self.$data.connection = {};
+
+						resolve();
+
+						return;
+                    }
 
 					let existingBrowserConnection = result.data.connectionBrowserOne;
 
@@ -451,6 +468,7 @@
 						});
 					}
 
+					self.$data.loggedIn = true;
 					self.$data.connection = existingBrowserConnection || {};
 
 					resolve();

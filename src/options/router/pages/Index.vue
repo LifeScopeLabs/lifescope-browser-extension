@@ -13,29 +13,29 @@
 				</p>
 
 				<p v-if="browserName === 'Chrome' || browserName === 'Firefox'">
-					When you add a domain to the whitelist, we will retrieve your entire history on that domain from your browser.
-					Any further visits to that domain will also be recorded.
+					When you add a domain or URL to the whitelist, we will retrieve your entire history on that domain or URL from your browser.
+					Any further visits to that domain or URL will also be recorded.
 					Note that these actions will only occur if you are logged into LifeScope on that device.
 				</p>
 				<p v-else-if="browserName === 'Microsoft Edge'">
 					Microsoft Edge unfortunately does not let us access your browser history at this time.
-					We therefore cannot retrieve any previous visits to domains to approve, and can only track future visits.
+					We therefore cannot retrieve any previous visits to domains or URL that you have approved, and can only track future visits.
 					Note that you must be logged into LifeScope on that device for future visits to be recorded.
 				</p>
 
-				<p>Deleting a domain from the list will stop the extension from tracking that domain going forward, but it will <u>not</u> delete anything already recorded for that domain.</p>
+				<p>Deleting a domain or URL from the list will stop the extension from tracking that domain or URL going forward, but it will <u>not</u> delete anything already recorded for that domain or URL.</p>
 
 				<p>
 					At this time, there is no option for selectively deleting data gathered using this extension.
-					You would need to delete the Connection in the main LifeScope app, which will clear your whitelist, then add the domains you do want to keep back to the list.
+					You would need to delete the Connection in the main LifeScope app, which will clear your whitelist, then add the domains or URLs you do want to keep back to the list.
 				</p>
 
 				<div v-if="$data.connection && $data.connection.enabled === false">
 					<h2>Extension Connection is disabled</h2>
 
 					<div>
-						<p>The Connection for this browser extension is currently disabled. No new visits to any of the domains in your list are being recorded.</p>
-						<p>Any new domains that you add to the list will not have their history mapped until the Connection is enabled.</p>
+						<p>The Connection for this browser extension is currently disabled. No new visits to any of the domains or URLs in your list are being recorded.</p>
+						<p>Any new domains or URLs that you add to the list will not have their history mapped until the Connection is enabled.</p>
 						<p>Any activity on listed sites that occurs when the Connection is disabled will not be restored upon the Connection being enabled.</p>
 					</div>
 				</div>
@@ -46,8 +46,8 @@
 					<div>
 						<p>You can enter the domains or URLs of websites you want to track here. Some examples of domains are
 							'google.com', 'wikipedia.org', and 'dmv.ca.gov'. Basically, it's everything after the
-							'https://' that ends with '.com', '.org', etc. An example of a URL is 'en.wikipedia.org/Main_Page';
-							it's the domain, plus everything after each '/', but not any '?' or '#' or anything following those characters.</p>
+							'https://' that ends with '.com', '.org', etc. An example of a URL is 'https://en.wikipedia.org/Main_Page';
+							it's the http(s)://, plus the domain, plus everything after each '/', but not any '?' or '#' or anything following those characters.</p>
 						<p>If you don't want to enter this information manually, go to the site you want to track, click
 							on the button for the LifeScope extension, and select 'Start tracking this domain' or 'Start tracking this URL'.</p>
 					</div>
@@ -107,7 +107,7 @@
 	}
 
 	let domainRegex = /^([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+$/;
-	let siteRegex = /([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)+\/?$/;
+	let siteRegex = /^(http(s)?:\/\/)([a-zA-Z0-9]+\.)+[a-zA-Z0-9]+(\/([.a-zA-Z0-9_-~!$&'()*+,;=:@])+)*\/?/;
 
 	export default {
 		data() {
@@ -143,23 +143,69 @@
 
 				this.$data.newDomain = '';
 
-				if (this.$data.domain.match(domainRegex) == null && this.$data.domain.match(siteRegex) == null) {
+				let parsedUrl = url.parse(this.$data.domain);
+
+				let condensedUrl = this.$data.domain;
+
+				console.log(parsedUrl);
+
+				if (parsedUrl.protocol && parsedUrl.host && parsedUrl.pathname) {
+					condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host;
+
+					if (parsedUrl.pathname !== '/') {
+						condensedUrl += parsedUrl.pathname;
+					}
+				}
+
+				console.log('condensedUrl: ' + condensedUrl);
+
+				let domainWhitelistExists = this.$store.state.whitelist.indexOf(this.$data.domain);
+
+				let siteWhitelistExists = this.$store.state.whitelist.indexOf(condensedUrl);
+
+				console.log('domainWhitelistExists: ' + domainWhitelistExists);
+				console.log('siteWhitelistExists: ' + siteWhitelistExists);
+
+				console.log(this.$data.domain.match(domainRegex));
+				console.log(condensedUrl.match(siteRegex));
+				if (this.$data.domain.match(domainRegex) == null && condensedUrl.match(siteRegex) == null) {
 					this.$data.invalidDomain = true;
+
+					console.log(this.$data.invalidDomain);
 
 					setTimeout(function() {
 						self.$data.invalidDomain = false;
+						console.log(self.$data.invalidDomain);
 					}, 2000);
 
 					return;
 				}
 
-				let domainWhitelistExists = this.$store.state.whitelist.indexOf(this.$data.domain);
+				if (siteWhitelistExists === -1) {
+					this.$store.state.whitelist.push(condensedUrl);
+
+					await this.$store.dispatch({
+						type: 'saveUserSettings'
+					});
+
+					currentBrowser.runtime.sendMessage({
+						data: 'triggerHistoryCrawl',
+						connection: this.$data.connection
+					});
+
+					return;
+				}
 
 				if (domainWhitelistExists === -1) {
 					this.$store.state.whitelist.push(this.$data.domain);
 
 					this.$store.dispatch({
 						type: 'saveUserSettings'
+					});
+
+					currentBrowser.runtime.sendMessage({
+						data: 'triggerHistoryCrawl',
+						connection: this.$data.connection
 					});
 				}
 			},
@@ -196,8 +242,9 @@
 			});
 
 			if (sessionIdCookie != null) {
-				let result = await $apollo.query({
-					query: gql`query getBrowserConnection($browser: String!) {
+				try {
+					let result = await $apollo.query({
+						query: gql`query getBrowserConnection($browser: String!) {
 						connectionBrowserOne(browser: $browser) {
 							id,
 							enabled,
@@ -205,11 +252,16 @@
 							provider_id_string
 						}
 					}`,
-					variables: {
-						browser: bowser.name
-					},
-					fetchPolicy: 'no-cache'
-				});
+						variables: {
+							browser: bowser.name
+						},
+						fetchPolicy: 'no-cache'
+					});
+				} catch(err) {
+					this.$data.connection = {};
+
+					return;
+				}
 
 				let existingBrowserConnection = result.data.connectionBrowserOne;
 

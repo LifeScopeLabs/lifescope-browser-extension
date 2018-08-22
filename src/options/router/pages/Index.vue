@@ -32,7 +32,7 @@
 				<div class="whitelist">
 					<h3>Tracked DomainURL List</h3>
 					<div>
-						<p>Enter web domains or URLs of websites for LifeScope to track here (Such as 'wikipedia.org' or 'hulu.com/rick-and-morty'.</p>
+						<p>Enter web domains or URLs of websites for LifeScope to track here (Such as 'wikipedia.org' or 'https://hulu.com/rick-and-morty').</p>
 					</div>
 					<form v-on:submit.prevent="addWhitelistEntry">
 						<div class="add-domain flexbox flex-x-center">
@@ -126,8 +126,6 @@
 
 				let condensedUrl = this.$data.domain;
 
-				console.log(parsedUrl);
-
 				if (parsedUrl.protocol && parsedUrl.host && parsedUrl.pathname) {
 					condensedUrl = parsedUrl.protocol + '//' + parsedUrl.host;
 
@@ -136,25 +134,16 @@
 					}
 				}
 
-				console.log('condensedUrl: ' + condensedUrl);
 
 				let domainWhitelistExists = this.$store.state.whitelist.indexOf(this.$data.domain);
 
 				let siteWhitelistExists = this.$store.state.whitelist.indexOf(condensedUrl);
 
-				console.log('domainWhitelistExists: ' + domainWhitelistExists);
-				console.log('siteWhitelistExists: ' + siteWhitelistExists);
-
-				console.log(this.$data.domain.match(domainRegex));
-				console.log(condensedUrl.match(siteRegex));
 				if (this.$data.domain.match(domainRegex) == null && condensedUrl.match(siteRegex) == null) {
 					this.$data.invalidDomain = true;
 
-					console.log(this.$data.invalidDomain);
-
 					setTimeout(function() {
 						self.$data.invalidDomain = false;
-						console.log(self.$data.invalidDomain);
 					}, 2000);
 
 					return;
@@ -221,8 +210,10 @@
 			});
 
 			if (sessionIdCookie != null) {
+				let result;
+
 				try {
-					let result = await $apollo.query({
+					result = await $apollo.query({
 						query: gql`query getBrowserConnection($browser: String!) {
 						connectionBrowserOne(browser: $browser) {
 							id,

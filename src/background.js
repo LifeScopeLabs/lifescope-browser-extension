@@ -317,8 +317,10 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 		});
 
 		if (sessionIdCookie != null) {
+			let result;
+
 			try {
-				let result = await apollo.query({
+				result = await apollo.query({
 					query: gql`query getBrowserConnection($browser: String!) {
                             connectionBrowserOne(browser: $browser) {
                                 id,
@@ -436,6 +438,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 						newContent = {
 							connection_id_string: store.state.connection.id,
+							provider_id_string: store.state.provider_id_string,
 							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
 							tagMasks: {
 								source: []
@@ -495,6 +498,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 					catch(error) {
 						newContent = {
 							connection_id_string: store.state.connection.id,
+							provider_id_string: store.state.provider_id_string,
 							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + store.state.url,
 							tagMasks: {
 								source: []

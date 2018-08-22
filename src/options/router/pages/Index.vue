@@ -14,12 +14,12 @@
 				</p>
 				<p v-else-if="browserName === 'Microsoft Edge'">
 					Microsoft Edge unfortunately does not let us access your browser history at this time.
-					We therefore cannot retrieve any previous visits to domains or URL that you have approved, and can only track future visits.
+					We therefore cannot retrieve any previous visits to domains or URLs that you have approved, and can only track future visits.
 					Note that you must be logged into LifeScope on that device for future visits to be recorded.
 				</p>
-				<p>Deleting from the list will stop tracking but it will <u>not</u> delete vists already recorded for that domain or URL.</p>
+				<p>Deleting an item from the list will stop tracking it, but it will <u>not</u> delete visits already recorded for that domain or URL.</p>
 				<p>
-					At this time, there is no option for selectively deleting data gathered using this extension but you can delete indexted web visits in the LifeScope app.
+					At this time, there is no option for selectively deleting data gathered using this extension, but you can delete all indexed web visits from that browser in the LifeScope app.
 				</p>
 				<div v-if="$data.connection && $data.connection.enabled === false">
 					<h2>Extension Connection is disabled</h2>

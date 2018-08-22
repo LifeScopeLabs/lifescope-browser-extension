@@ -28,6 +28,11 @@ const apolloProvider = new VueApollo({
 	defaultClient: apolloClient,
 });
 
+const audioSites = [
+	'Spotify',
+	'SoundCloud'
+];
+
 const apollo = apolloProvider.provide().$apolloProvider.defaultClient;
 
 let tagRegex = /#[^#\s]+/g;

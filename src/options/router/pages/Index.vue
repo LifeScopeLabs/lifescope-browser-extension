@@ -30,9 +30,9 @@
 					</div>
 				</div>
 				<div class="whitelist">
-					<h3>Tracked DomainURL List</h3>
+					<h3>Tracked Domain URL List</h3>
 					<div>
-						<p>Enter web domains or URLs of websites for LifeScope to track here (Such as 'wikipedia.org' or 'https://hulu.com/rick-and-morty').</p>
+						<p>Enter web domains or URLs of websites for LifeScope to track, such as 'wikipedia.org' or 'https://hulu.com/rick-and-morty'.</p>
 					</div>
 					<form v-on:submit.prevent="addWhitelistEntry">
 						<div class="add-domain flexbox flex-x-center">

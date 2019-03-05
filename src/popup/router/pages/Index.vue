@@ -2,29 +2,29 @@
   <div class="flexbox flex-column flex-x-center">
     <div class="login-status">
       <a href="https://app.lifescope.io" target="_blank">
-        <div v-if="$data.loggedIn === false">Log in to LifeScope to enable this extension</div>
-        <div v-else-if="$data.loggedIn === true">You are logged into LifeScope</div>
+        <div v-if="$data.loggedIn === false">Log in to continue</div>
+        <div v-else-if="$data.loggedIn === true">Logged into LifeScope</div>
       </a>
     </div>
     <div class="flexbox flex-column">
-      <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteDomainWhitelistEntry" style="margin-bottom: 0.5em">Stop tracking this domain</button>
-      <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addDomainWhitelistEntry" style="margin-bottom: 0.5em">Start tracking this domain</button>
-      <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this URL</button>
-      <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this URL</button>
+      <button v-if="domainWhitelisted === true" class="danger" v-on:click="deleteDomainWhitelistEntry" style="margin-bottom: 0.5em">Stop tracking this Site</button>
+      <button v-else-if="domainWhitelisted === false" class="primary" v-on:click="addDomainWhitelistEntry" style="margin-bottom: 0.5em">Start tracking this Site</button>
+      <button v-if="siteWhitelisted === true" class="danger margin-bottom-1em" v-on:click="deleteSiteWhitelistEntry">Stop tracking this Page</button>
+      <button v-else-if="siteWhitelisted === false" class="primary margin-bottom-1em" v-on:click="addSiteWhitelistEntry">Start tracking this Page</button>
       <button v-on:click="openOptionsPage">Open Extension Options</button>
     </div>
 
   	<div v-if="domainPending" class="crawl-pending">
-		Your history on this domain is currently being parsed. You may be unable to tag this page until the process is complete.
+		Your site history is being parsed. You may be tag when process is complete.
 	</div>
 
   	<div v-if="sitePending" class="crawl-pending">
-	 	 Your history on this URL is currently being parsed. You may be unable to tag this page until the process is complete.
+		Your page history is being parsed. You may be tag when process is complete.
   	</div>
 
     <div id="tagging" class="flexbox flex-column flex-x-center content actions" v-if="(domainWhitelisted === true || siteWhitelisted === true) && $data.loggedIn === true && $data.item.id != null">
       <div class="flexbox flex-x-center">
-        <div class="title">#Tag this page</div>
+        <div class="title">Tag this page</div>
         <a class="how-to" href="https://lifescope.io/how-to" target="_blank"><i class="fa fa-question-circle"></i></a>
       </div>
 

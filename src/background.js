@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import moment from 'moment';
 
 import { ApolloClient } from 'apollo-client'
+import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
@@ -18,8 +19,26 @@ const httpLink = new HttpLink({
 	credentials: 'include'
 });
 
+const middlewareLink = new ApolloLink((operation, forward) => {
+	if (_.hasIn(store, 'state.csrf_token')) {
+		let headers = operation.getContext().headers;
+
+		if (headers == null) {
+			headers = {};
+		}
+
+		headers['X-CSRF-Token'] = store.state.csrf_token;
+
+		operation.setContext({
+			headers: headers
+		});
+	}
+
+	return forward(operation);
+});
+
 const apolloClient = new ApolloClient({
-	link: httpLink,
+	link: middlewareLink.concat(httpLink),
 	cache: new InMemoryCache(),
 	connectToDevTools: true,
 });
@@ -257,6 +276,9 @@ async function triggerHistoryCrawl(connection) {
 				let failed = false;
 				let startIndex = 0;
 
+				let csrfResponse = await axios.get('https://api.lifescope.io/csrf');
+				store.state.csrf_token = csrfResponse.data ? csrfResponse.data.csrf_token: null;
+
 				while (!finished) {
 					let slice = events.slice(startIndex, startIndex + sliceSize);
 
@@ -323,6 +345,9 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 		if (sessionIdCookie != null) {
 			let result;
+
+			let csrfResponse = await axios.get('https://api.lifescope.io/csrf');
+			store.state.csrf_token = csrfResponse.data ? csrfResponse.data.csrf_token: null;
 
 			try {
 				result = await apollo.query({

@@ -212,6 +212,9 @@
 			if (sessionIdCookie != null) {
 				let result;
 
+				let csrfResponse = await axios.get('https://api.lifescope.io/csrf');
+				self.$store.state.csrf_token = csrfResponse.data ? csrfResponse.data.csrf_token: null;
+
 				try {
 					result = await $apollo.query({
 						query: gql`query getBrowserConnection($browser: String!) {

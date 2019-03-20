@@ -51,6 +51,7 @@
 	import url from 'url';
 
 	import _ from 'lodash';
+    import axios from 'axios';
 	import bowser from 'bowser';
 	import gql from 'graphql-tag';
 
@@ -278,7 +279,7 @@
             },
 
 		    addTag: async function() {
-			    let strippedTag = this.$data.tagName.replace(/[^a-zA-Z0-9\s-]/, '').replace(/\s+/g, ' ');
+			    let strippedTag = this.$data.tagName.replace(/[^a-zA-Z0-9-]/, '');
 			    let slugifiedTag = strippedTag.toLowerCase().replace(/\s/g, '-');
 
 			    if (slugifiedTag.length === 0) {
@@ -403,6 +404,9 @@
             await this.$store.dispatch({
                 type: 'loadUserSettings'
             });
+
+            let csrfResponse = await axios.get('https://api.lifescope.io/csrf');
+            self.$store.state.csrf_token = csrfResponse.data ? csrfResponse.data.csrf_token: null;
 
 	        await new Promise(function(resolve, reject) {
 		        currentBrowser.tabs.query({

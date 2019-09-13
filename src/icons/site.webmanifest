@@ -1,6 +1,6 @@
 {
-    "name": "Lifescope",
-    "short_name": "Lifescope",
+    "name": "LifeScope",
+    "short_name": "LifeScope",
     "icons": [
         {
             "src": "/android-chrome-36x36.png",
@@ -50,5 +50,6 @@
     ],
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
+    "start_url": "https://app.lifescope.io",
     "display": "standalone"
 }

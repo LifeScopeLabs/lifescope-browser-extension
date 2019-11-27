@@ -236,6 +236,7 @@ async function triggerHistoryCrawl(connection) {
 							catch(error) {
 								newContent = {
 									connection_id_string: connection.id,
+									provider_id_string: connection.provider_id_string,
 									identifier: connection.id + ':::' + bowser.name + ':::' + match.url,
 									tagMasks: {
 										source: []
@@ -468,7 +469,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 
 						newContent = {
 							connection_id_string: store.state.connection.id,
-							provider_id_string: store.state.provider_id_string,
+							provider_id_string: store.state.connection.provider_id_string,
 							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + data.meta.canonical,
 							tagMasks: {
 								source: []
@@ -528,7 +529,7 @@ currentBrowser.runtime.onInstalled.addListener(function() {
 					catch(error) {
 						newContent = {
 							connection_id_string: store.state.connection.id,
-							provider_id_string: store.state.provider_id_string,
+							provider_id_string: store.state.connection.provider_id_string,
 							identifier: store.state.connection.id + ':::' + bowser.name + ':::' + store.state.url,
 							tagMasks: {
 								source: []

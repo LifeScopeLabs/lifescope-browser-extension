@@ -194,9 +194,10 @@
 		},
 
 		mounted: async function() {
+			let self = this;
 			let $apollo = this.$apollo.provider.defaultClient;
 
-			await this.$store.dispatch({
+			await self.$store.dispatch({
 				type: 'loadUserSettings'
 			});
 
@@ -231,7 +232,7 @@
 						fetchPolicy: 'no-cache'
 					});
 				} catch(err) {
-					this.$data.connection = {};
+					self.$data.connection = {};
 
 					return;
 				}
@@ -256,19 +257,19 @@
 
 					existingBrowserConnection = result.data.connectionCreateBrowser;
 
-					this.$store.state.whitelist = [];
-					this.$store.state.whitelistPending = {};
-					this.$store.state.whitelistHistory = [];
+					self.$store.state.whitelist = [];
+					self.$store.state.whitelistPending = {};
+					self.$store.state.whitelistHistory = [];
 
-					this.$store.dispatch({
+					self.$store.dispatch({
 						type: 'saveUserSettings'
 					});
 				}
 
-				this.$data.connection = existingBrowserConnection || {};
+				self.$data.connection = existingBrowserConnection || {};
 			}
 			else {
-				this.$data.connection = {};
+				self.$data.connection = {};
 			}
 		}
 	};

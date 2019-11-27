@@ -562,7 +562,7 @@
                         type: 'loadUserSettings'
                     });
 		        }
-                else if (message.data = 'runComplete') {
+                else if (message.data === 'runComplete') {
 		        	getPageContent();
                 }
 	        });
